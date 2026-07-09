@@ -24,7 +24,8 @@ jobs:
           chmod 700 ~/.ssh
           printf '%s\n' "${{ secrets.TENCENT_SSH_KEY }}" > ~/.ssh/tencent_deploy_key
           chmod 600 ~/.ssh/tencent_deploy_key
-          ssh-keyscan -p "${{ secrets.TENCENT_PORT || '22' }}" -H "${{ secrets.TENCENT_HOST }}" >> ~/.ssh/known_hosts
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -T 30 -p "${{ secrets.TENCENT_PORT || '22' }}" -H "${{ secrets.TENCENT_HOST }}" >> ~/.ssh/known_hosts || true
 
       - name: Deploy latest main branch
         shell: bash
@@ -33,6 +34,8 @@ jobs:
           ssh \
             -i ~/.ssh/tencent_deploy_key \
             -p "${{ secrets.TENCENT_PORT || '22' }}" \
+            -o ConnectTimeout=30 \
             -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
             "${{ secrets.TENCENT_USER }}@${{ secrets.TENCENT_HOST }}" \
             "/usr/local/bin/deploy-serena-site"
