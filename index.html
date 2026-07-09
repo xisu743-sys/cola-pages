@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serena 熙冉</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ═══ 首页专属：全屏入场 ═══ */
+body.home-body {
+  overflow: hidden;
+  background: var(--bg, #FFFEFA);
+  opacity: 1;
+  animation: none;
+}
+
+/* ── IP 形象：始终居中 ── */
+#ip-wrapper {
+  position: fixed;
+  z-index: 110;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* pointer-events 处理拖动，不用 touch-action:none 全局锁滚 */
+  user-select: none;
+  -webkit-user-select: none;
+  transition: left 0.8s cubic-bezier(.4,0,.2,1),
+              top  0.8s cubic-bezier(.4,0,.2,1),
+              transform 0.8s cubic-bezier(.4,0,.2,1);
+}
+#ip-wrapper.dragging  { transition: none; }
+#ip-wrapper.settled   { transition: none; }
+#ip-wrapper.entering {
+  transition: none;
+  transform-origin: top left;
+  filter: drop-shadow(0 14px 34px rgba(0,0,0,0.14));
+}
+
+#ip-img {
+  display: block;
+  width: 240px;
+  height: auto;
+  animation: breathe 5s ease-in-out infinite;
+  transform-origin: bottom center;
+  cursor: grab;
+  filter: drop-shadow(0 8px 32px rgba(0,0,0,0.12));
+  -webkit-user-drag: none;
+  /* 移动端关掉默认 touch 行为，在 JS 里手动控制 */
+  touch-action: none;
+}
+#ip-img.dragging-img {
+  cursor: grabbing;
+  animation: none;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50%       { transform: scale(1.015) translateY(-6px); }
+}
+
+/* ── 打字机文字层：从 IP 头顶上方开始生成 ── */
+#typewriter-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+  padding: clamp(96px, 18vh, 168px) 24px 48px;
+  transition: opacity 0.4s ease, filter 0.45s ease, transform 0.5s cubic-bezier(.16,1,.3,1);
+}
+
+.tw-line {
+  font-family: "Noto Serif SC", "PingFang SC", serif;
+  /* 字号由 JS 动态设置，不用 CSS 计算 */
+  font-size: var(--tw-font-size, 1rem);
+  color: var(--ink, #1A1A1A);
+  letter-spacing: 0.06em;
+  opacity: 0;
+  line-height: 1.85;
+  white-space: nowrap;
+  transform: translateX(var(--scatter-x, 0));
+  transition: opacity 0.3s ease, transform 0.7s cubic-bezier(.16,1,.3,1);
+  text-align: center;
+}
+.tw-line.visible { opacity: 1; }
+.tw-line.dim     { opacity: 0.18; }
+.tw-line.departing {
+  opacity: 0;
+  transform: translateX(var(--scatter-x, 0)) translateY(-8px);
+}
+/* 关键行高亮 */
+.tw-line.highlight {
+  color: var(--accent, #3F51B5);
+  font-weight: 500;
+  opacity: 1;
+}
+
+body.entering-records #typewriter-lines {
+  opacity: 0;
+  filter: blur(1px);
+  transform: translateY(-18px);
+}
+
+body.entering-records #bottom-actions,
+body.entering-records #skip-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#archive-preview {
+  position: fixed;
+  left: 50%;
+  top: 48%;
+  z-index: 90;
+  width: min(640px, calc(100vw - 80px));
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, calc(-50% + 24px));
+  /* 延迟起步，让打字机文字先退场，避免两层内容叠字 */
+  transition: opacity 0.7s cubic-bezier(.16,1,.3,1) 0.18s,
+              transform 0.7s cubic-bezier(.16,1,.3,1) 0.18s;
+}
+#archive-preview .file-tag {
+  margin-bottom: 24px;
+}
+#archive-preview .cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+#archive-preview .case-card {
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 8px;
+  padding: 14px 18px;
+  background: rgba(255,254,250,0.76);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: inherit;
+  text-decoration: none;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: opacity 0.56s ease,
+              transform 0.7s cubic-bezier(.16,1,.3,1),
+              background-color 0.18s ease,
+              border-color 0.18s ease;
+}
+#archive-preview .case-card:hover {
+  background: rgba(63,81,181,0.04);
+  border-color: rgba(63,81,181,0.25);
+}
+#archive-preview .case-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+#archive-preview .case-id {
+  font-family: "Inter", monospace;
+  font-size: 0.72rem;
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  min-width: 72px;
+}
+#archive-preview .case-name {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+}
+#archive-preview .case-tag {
+  font-size: 0.7rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+#archive-preview .archived-tag {
+  border-color: rgba(26,26,26,0.25);
+  color: rgba(26,26,26,0.45);
+}
+#archive-preview .stalled-tag {
+  border-color: #C2185B;
+  color: #C2185B;
+  opacity: 0.7;
+}
+#archive-preview .active-tag {
+  border-color: #3F51B5;
+  color: #3F51B5;
+}
+#archive-preview .case-open-hint {
+  font-size: 0.72rem;
+  opacity: 0.3;
+  letter-spacing: 0.06em;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+/* 与 works.html 里同名元素配对，跳转时浏览器原生变形过渡（不支持的浏览器忽略） */
+#archive-preview .file-tag       { view-transition-name: vt-file-tag; }
+#archive-preview .case-card:nth-child(1) { view-transition-name: vt-case-w1; }
+#archive-preview .case-card:nth-child(2) { view-transition-name: vt-case-w2; }
+#archive-preview .case-card:nth-child(3) { view-transition-name: vt-case-w3; }
+#archive-preview .case-card:nth-child(4) { view-transition-name: vt-case-w4; }
+#archive-preview .case-card:nth-child(5) { view-transition-name: vt-case-w5; }
+body.entering-records #archive-preview {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+body.entering-records #archive-preview .case-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+body.entering-records #archive-preview .case-card:nth-child(1) { transition-delay: 0.08s; }
+body.entering-records #archive-preview .case-card:nth-child(2) { transition-delay: 0.2s; }
+body.entering-records #archive-preview .case-card:nth-child(3) { transition-delay: 0.32s; }
+body.entering-records #archive-preview .case-card:nth-child(4) { transition-delay: 0.44s; }
+body.entering-records #archive-preview .case-card:nth-child(5) { transition-delay: 0.56s; }
+body.archive-ready #archive-preview {
+  pointer-events: auto;
+}
+
+/* 光标 */
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent, #3F51B5);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── 跳过按钮 ── */
+#skip-btn {
+  position: fixed;
+  bottom: 36px;
+  right: 48px;
+  z-index: 200;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.82rem;
+  opacity: 0.35;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 6px 18px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+#skip-btn:hover { opacity: 0.85; }
+
+/* ── 底部操作区：进入 + 提示 纵向排列，不互相遮挡 ── */
+#bottom-actions {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+#drag-hint {
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--accent, #3F51B5);
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.6s ease;
+}
+#drag-hint.show { opacity: 0.65; }
+
+#enter-btn {
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+  border: 1.5px solid var(--ink, #1A1A1A);
+  border-radius: 999px;
+  padding: 8px 28px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease, background-color 0.2s ease, color 0.2s ease;
+}
+#enter-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#enter-btn:hover {
+  background: var(--ink, #1A1A1A);
+  color: var(--bg, #FFFEFA);
+}
+
+/* ── 入场完成后 ── */
+body.intro-done { overflow: auto; }
+.page-shell {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease 0.2s;
+}
+body.intro-done .page-shell {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── 移动端：同等体验，为小屏幕重新设计── */
+@media (max-width: 600px) {
+  #ip-wrapper {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #ip-img { width: 150px; }
+  #typewriter-lines {
+    padding-top: var(--tw-padding-top, clamp(64px, 11vh, 96px));
+    padding-bottom: var(--tw-padding-bottom, 120px);
+  }
+  .tw-line {
+    font-size: var(--tw-font-size, 0.82rem);
+    letter-spacing: 0.03em;
+  }
+  #bottom-actions { bottom: 24px; gap: 10px; }
+  #enter-btn, #skip-btn { font-size: 0.76rem; padding: 6px 20px; }
+  #drag-hint { font-size: 0.74rem; }
+  #archive-preview {
+    top: 46%;
+    width: calc(100vw - 36px);
+  }
+  #archive-preview .file-tag {
+    margin-bottom: 16px;
+  }
+  #archive-preview .case-card {
+    padding: 12px 14px;
+    align-items: flex-start;
+  }
+  #archive-preview .case-card-left {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  #archive-preview .case-id {
+    min-width: 0;
+  }
+}
+</style>
+</head>
+<body class="home-body">
+
+<!-- ══ IP 形象（居中，可拖动）══ -->
+<div id="ip-wrapper">
+  <img id="ip-img" src="assets/serena-fullbody.png" alt="Serena" draggable="false">
+</div>
+
+<!-- ══ 打字机文字层 ══ -->
+<div id="typewriter-lines"></div>
+
+<!-- ══ 底部 UI ══ -->
+<button id="skip-btn">跳过</button>
+<div id="bottom-actions">
+  <div id="drag-hint">▲ 档案被遮挡 · 拖动她查看全部</div>
+  <button id="enter-btn">进入档案室 →</button>
+</div>
+
+<div id="archive-preview" aria-hidden="true">
+  <div class="file-tag">[ 异常事件记录 · 共 6 份卷宗 · 点击打开 ]</div>
+  <div class="cases-list">
+    <a class="case-card" href="works.html">
+      <div class="case-card-left">
+        <span class="case-id">#2024-001</span>
+        <span class="case-name">ifyoucan 实习 · 主编助理</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="case-tag archived-tag">已归档</span>
+        <span class="case-open-hint">打开 ↗</span>
+      </div>
+    </a>
+    <a class="case-card" href="works.html">
+      <div class="case-card-left">
+        <span class="case-id">#2024-002</span>
+        <span class="case-name">央视纪录片撰稿</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="case-tag archived-tag">已归档</span>
+        <span class="case-open-hint">打开 ↗</span>
+      </div>
+    </a>
+    <a class="case-card" href="works.html">
+      <div class="case-card-left">
+        <span class="case-id">#2025-001</span>
+        <span class="case-name">苏州智加科技 PR 实习</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="case-tag archived-tag">已归档</span>
+        <span class="case-open-hint">打开 ↗</span>
+      </div>
+    </a>
+    <a class="case-card" href="works.html">
+      <div class="case-card-left">
+        <span class="case-id">#2026-001</span>
+        <span class="case-name">简历版本管理系统</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="case-tag stalled-tag">搁置中</span>
+        <span class="case-open-hint">打开 ↗</span>
+      </div>
+    </a>
+    <a class="case-card" href="works.html">
+      <div class="case-card-left">
+        <span class="case-id">#2026-003</span>
+        <span class="case-name">可验证匿名评价协议</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="case-tag active-tag">⚡ 高度异常</span>
+        <span class="case-open-hint">打开 ↗</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ══ 正式页面 ══ -->
+<div class="page-shell">
+  <div class="page">
+  
+    <main class="content"></main>
+    
+  </div>
+  <nav class="bottom-nav">
+    <a href="about.html">存在体概况</a>
+    <a href="works.html">异常事件记录</a>
+    <a href="talks.html">信号追踪</a>
+    <a href="contact.html">接触协议</a>
+  </nav>
+</div>
+
+<script>
+(function () {
+  /* ── 文案 ── */
+  const LINES = [
+    "[ 系统正在初始化… ]",
+    "",
+    "你好，旅行者。",
+    "检测到未知访客 ——",
+    "正在加载存在体档案",
+    "",
+    "代号 / SERENA_熙冉",
+    "属性 / 研究者 · 创造者 · 游荡者",
+    "已知特征 / 喜欢把想法变成真实的东西",
+    "已知危险 / 不按常理出牌",
+    "",
+    "警告：接触后可能出现以下症状——",
+    "持续思考 · 不受控制的表达欲",
+    "对这个世界的过度热情",
+    "",
+    "规则如下 ——",
+    "第一条：没有规则。",
+    "第二条：参见第一条。",
+    "",
+    "[ 档案加载完毕 ]",
+    "欢迎，或者，后悔都来不及了。",
+  ];
+
+  const CHAR_DELAY  = 46;
+  const LINE_PAUSE  = 160;
+  const EMPTY_PAUSE = 300;
+  const DIM_DELAY   = 500;
+
+  /* ── DOM ── */
+  const ipWrapper = document.getElementById('ip-wrapper');
+  const ipImg     = document.getElementById('ip-img');
+  const linesEl   = document.getElementById('typewriter-lines');
+  const skipBtn   = document.getElementById('skip-btn');
+  const bottomActions = document.getElementById('bottom-actions');
+  const dragHint  = document.getElementById('drag-hint');
+  const enterBtn  = document.getElementById('enter-btn');
+
+  /* ── 打字机 ── */
+  let lineEls  = [];
+  let cursorEl = null;
+  let twDone   = false;
+  let twAbort  = false;
+
+  // 关键行索引（高亮显示蓝色）
+  const HIGHLIGHT_LINES = new Set([6, 7, 8, 9, 15, 16]); // 代号/属性/规则行
+
+  function createLines() {
+    LINES.forEach((text, i) => {
+      const div = document.createElement('div');
+      div.className = 'tw-line';
+      if (HIGHLIGHT_LINES.has(i)) div.classList.add('highlight');
+      div.style.setProperty('--scatter-x', (i % 2 === 0 ? '-1' : '1') + 'px');
+      if (text === '') div.innerHTML = '&nbsp;';
+      linesEl.appendChild(div);
+      lineEls.push(div);
+    });
+  }
+
+  function typewriteLine(idx, onDone) {
+    const el   = lineEls[idx];
+    const text = LINES[idx];
+    el.classList.add('visible');
+
+    if (text === '') { setTimeout(onDone, EMPTY_PAUSE); return; }
+
+    if (!cursorEl) {
+      cursorEl = document.createElement('span');
+      cursorEl.className = 'tw-cursor';
+    }
+    el.innerHTML = '';
+    el.appendChild(cursorEl);
+
+    let i = 0;
+    function next() {
+      if (twAbort) return;
+      if (i >= text.length) { setTimeout(onDone, LINE_PAUSE); return; }
+      const s = document.createElement('span');
+      s.textContent = text[i++];
+      el.insertBefore(s, cursorEl);
+      setTimeout(next, CHAR_DELAY);
+    }
+    next();
+  }
+
+  async function runTypewriter() {
+    createLines();
+    for (let i = 0; i < LINES.length; i++) {
+      if (twAbort) break;
+      if (i > 0) {
+        setTimeout((idx => () => {
+          for (let j = 0; j < idx; j++) {
+            // highlight 行只降透明度，不改颜色
+            if (!lineEls[j].classList.contains('highlight')) {
+              lineEls[j].classList.add('dim');
+            } else {
+              lineEls[j].style.opacity = '0.3';
+            }
+          }
+        })(i), DIM_DELAY);
+      }
+      await new Promise(r => typewriteLine(i, r));
+    }
+    if (!twAbort) finishTypewriter();
+  }
+
+  function finishTypewriter() {
+    if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
+    twDone = true;
+    skipBtn.style.display = 'none';
+    setTimeout(() => {
+      dragHint.classList.add('show');
+      enterBtn.classList.add('show');
+    }, 400);
+  }
+
+  /* ── 跳过 ── */
+  skipBtn.addEventListener('click', () => {
+    twAbort = true;
+    // 立即显示所有行文字
+    lineEls.forEach((el, i) => {
+      el.classList.add('visible');
+      if (i < lineEls.length - 1) el.classList.add('dim');
+      if (LINES[i]) el.textContent = LINES[i];
+    });
+    finishTypewriter();
+  });
+
+
+  function moveIpToCorner() {
+    const rect = ipWrapper.getBoundingClientRect();
+    const isMobile = window.innerWidth <= 600;
+    const scale = isMobile ? 0.8 : 0.75;
+    const rightGap = isMobile ? 16 : 48;
+    const bottomGap = 80;
+    const startX = rect.left;
+    const startY = rect.top;
+    const targetX = window.innerWidth - rightGap - rect.width * scale;
+    const targetY = window.innerHeight - bottomGap - rect.height * scale;
+    const duration = 940;
+    const startedAt = performance.now();
+
+    ipWrapper.classList.remove('settled', 'dragging');
+    ipWrapper.classList.add('entering');
+    ipWrapper.style.setProperty('left', startX + 'px', 'important');
+    ipWrapper.style.setProperty('top', startY + 'px', 'important');
+    ipWrapper.style.setProperty('transform', 'scale(1)', 'important');
+
+    function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
+    function tick(now) {
+      const t = Math.min(1, (now - startedAt) / duration);
+      const eased = easeOutQuint(t);
+      const x = startX + (targetX - startX) * eased;
+      const y = startY + (targetY - startY) * eased;
+      const currentScale = 1 + (scale - 1) * eased;
+      ipWrapper.style.setProperty('left', x + 'px', 'important');
+      ipWrapper.style.setProperty('top', y + 'px', 'important');
+      ipWrapper.style.setProperty('transform', 'scale(' + currentScale + ')', 'important');
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ── 进入网站 ── */
+  function enterSite() {
+    document.body.classList.add('entering-records');
+    enterBtn.classList.remove('show');
+    dragHint.classList.remove('show');
+    skipBtn.style.display = 'none';
+    linesEl.style.setProperty('opacity', '0', 'important');
+    linesEl.style.setProperty('filter', 'blur(1px)', 'important');
+    linesEl.style.setProperty('transform', 'translateY(-18px)', 'important');
+    moveIpToCorner();
+
+    lineEls.forEach((el, i) => {
+      const direction = i % 2 === 0 ? -1 : 1;
+      el.style.setProperty('--scatter-x', (direction * (18 + (i % 4) * 6)) + 'px');
+      el.classList.add('departing');
+    });
+
+    setTimeout(() => {
+      linesEl.style.display = 'none';
+      sessionStorage.setItem('serena-entering-works', '1');
+      window.location.href = 'works.html';
+    }, 900);
+  }
+
+  enterBtn.addEventListener('click', enterSite);
+
+  /* ── 拖动 IP ── */
+  // 在 ip-img 上用 pointermove 替代 touchmove，防止 iOS Safari passive 问题
+  let dragging = false, dragOffX = 0, dragOffY = 0;
+
+  function onDragStart(e) {
+    // 先读 rect（此时 transform 还在），再清 transform，避免第一帧跳变
+    const rect = ipWrapper.getBoundingClientRect();
+    // 把 transform 换算成等价的 left/top，保证位置不动
+    ipWrapper.style.left      = rect.left + 'px';
+    ipWrapper.style.top       = rect.top  + 'px';
+    ipWrapper.style.transform = 'none';
+
+    dragging = true;
+    ipImg.classList.add('dragging-img');
+    ipWrapper.classList.add('dragging', 'settled');
+
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    dragOffX = cx - rect.left;
+    dragOffY = cy - rect.top;
+    e.preventDefault();
+  }
+  function onDragMove(e) {
+    if (!dragging) return;
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    ipWrapper.style.left = (cx - dragOffX) + 'px';
+    ipWrapper.style.top  = (cy - dragOffY) + 'px';
+  }
+  function onDragEnd() {
+    if (!dragging) return;
+    dragging = false;
+    ipImg.classList.remove('dragging-img');
+    ipWrapper.classList.remove('dragging');
+  }
+
+  ipImg.addEventListener('mousedown',  onDragStart);
+  ipImg.addEventListener('touchstart', onDragStart, { passive: false });
+  document.addEventListener('mousemove',  onDragMove);
+  // document 级 touchmove 必须 passive:false 才能 preventDefault
+  document.addEventListener('touchmove',  onDragMove, { passive: false });
+  document.addEventListener('mouseup',    onDragEnd);
+  document.addEventListener('touchend',   onDragEnd);
+
+  function getSafeBottom() {
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:fixed;bottom:0;height:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none;';
+    document.body.appendChild(probe);
+    const height = probe.getBoundingClientRect().height;
+    probe.remove();
+    return height || 0;
+  }
+
+  /* ── 动态字号：用 JS 读真实可用高度，三浏览器一致 ── */
+  function setFontSize() {
+    const vh = window.innerHeight;
+    const totalLines = LINES.length; // 21行
+    const lineHeight = 1.85;
+    const isMobile = window.innerWidth <= 600;
+    const actionsRect = bottomActions.getBoundingClientRect();
+    const safeBottom = getSafeBottom();
+    const topPadding = isMobile ? Math.min(96, Math.max(48, vh * 0.09)) : Math.min(168, Math.max(96, vh * 0.18));
+    const bottomPadding = isMobile ? Math.max(108, actionsRect.height + 42 + safeBottom) : 96;
+    const available = vh - topPadding - bottomPadding;
+    const computed = available / totalLines / lineHeight;
+    const minSize = isMobile ? 10.5 : 13;
+    const maxSize = isMobile ? 14 : 17;
+    const size = Math.min(maxSize, Math.max(minSize, computed));
+    document.documentElement.style.setProperty('--tw-font-size', size + 'px');
+    document.documentElement.style.setProperty('--tw-padding-top', topPadding + 'px');
+    document.documentElement.style.setProperty('--tw-padding-bottom', bottomPadding + 'px');
+  }
+  setFontSize();
+  window.addEventListener('resize', setFontSize);
+
+  /* ── 启动 ── */
+  runTypewriter();
+})();
+</script>
+</body>
+</html>

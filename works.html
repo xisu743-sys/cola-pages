@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>异常事件记录 — Serena 熙冉</title>
+<script>
+/* 从首页"进入档案室"过渡而来：跳过落地时的二次淡入，避免和跨页过渡叠加成两段动画 */
+if (sessionStorage.getItem('serena-entering-works') === '1') {
+  document.documentElement.classList.add('vt-entry');
+  sessionStorage.removeItem('serena-entering-works');
+}
+</script>
+<link rel="stylesheet" href="style.css">
+<style>
+html.vt-entry body { animation: none; opacity: 1; }
+
+/* 与 index.html 预览卡片配对，跨页跳转时浏览器原生变形过渡 */
+.file-tag              { view-transition-name: vt-file-tag; }
+.case-card[data-id="w1"] { view-transition-name: vt-case-w1; }
+.case-card[data-id="w2"] { view-transition-name: vt-case-w2; }
+.case-card[data-id="w3"] { view-transition-name: vt-case-w3; }
+.case-card[data-id="w4"] { view-transition-name: vt-case-w4; }
+.case-card[data-id="w5"] { view-transition-name: vt-case-w5; }
+/* ══ IP 形象（右下角，可拖动）══ */
+#ip-works {
+  position: fixed;
+  right: 48px;
+  bottom: 80px;
+  z-index: 50;
+  width: 180px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.10));
+  animation: breathe 5s ease-in-out infinite;
+  transform-origin: bottom center;
+  -webkit-user-drag: none;
+}
+#ip-works.dragging { cursor: grabbing; animation: none; }
+@keyframes breathe {
+  0%,100% { transform: scale(1) translateY(0); }
+  50%      { transform: scale(1.015) translateY(-5px); }
+}
+
+/* ══ 卷宗列表 ══ */
+.cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.case-card {
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 8px;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+  user-select: none;
+}
+.case-card:hover {
+  background: rgba(63,81,181,0.04);
+  border-color: rgba(63,81,181,0.25);
+}
+.case-card-left { display: flex; align-items: center; gap: 14px; }
+.case-id {
+  font-family: "Inter", monospace;
+  font-size: 0.72rem;
+  opacity: 0.4;
+  letter-spacing: 0.05em;
+  min-width: 72px;
+}
+.case-name {
+  font-family: "Noto Serif SC", serif;
+  font-size: 1rem;
+}
+.case-tag {
+  font-size: 0.7rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.running-tag  { border-color: #B8E954; color: #4a6400; }
+.active-tag   { border-color: #3F51B5; color: #3F51B5; }
+.archived-tag { border-color: rgba(26,26,26,0.25); color: rgba(26,26,26,0.45); }
+.stalled-tag  { border-color: #C2185B; color: #C2185B; opacity: 0.7; }
+
+.case-open-hint {
+  font-size: 0.72rem;
+  opacity: 0.3;
+  letter-spacing: 0.06em;
+  margin-left: 8px;
+}
+
+/* ══ 档案窗口 ══ */
+.case-window {
+  position: fixed;
+  z-index: 300;
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  background: var(--bg, #FFFEFA);
+  border: 1.5px solid rgba(26,26,26,0.15);
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.14);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  /* 入场动画 */
+  transform-origin: top left;
+}
+.case-window.open {
+  display: flex;
+  animation: winOpen 0.22s cubic-bezier(.2,0,.2,1) both;
+}
+@keyframes winOpen {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* 窗口标题栏 */
+.win-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(26,26,26,0.04);
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
+}
+.win-titlebar.dragging { cursor: grabbing; }
+
+/* 红绿灯 */
+.win-dots { display: flex; gap: 6px; }
+.win-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.win-dot:hover { opacity: 0.75; }
+.win-dot-close  { background: #FF5F57; }
+.win-dot-min    { background: #FEBC2E; }
+.win-dot-expand { background: #28C840; }
+
+.win-title {
+  flex: 1;
+  text-align: center;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.82rem;
+  opacity: 0.55;
+  letter-spacing: 0.06em;
+}
+.win-newtab {
+  font-size: 0.7rem;
+  opacity: 0.35;
+  text-decoration: none;
+  color: inherit;
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s;
+}
+.win-newtab:hover { opacity: 0.8; }
+
+/* 扫描线 */
+.win-scan {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3F51B5 40%, transparent);
+  animation: scan 0.5s ease forwards;
+  flex-shrink: 0;
+}
+@keyframes scan {
+  from { opacity: 0.8; transform: translateX(-100%); }
+  to   { opacity: 0;   transform: translateX(100%); }
+}
+
+/* 窗口内容 */
+.win-body {
+  padding: 20px 22px 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+.win-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 4px 12px;
+  margin-bottom: 6px;
+}
+.win-label {
+  font-family: "Inter", monospace;
+  font-size: 0.72rem;
+  opacity: 0.38;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+.win-val { font-family: "Noto Serif SC", serif; }
+.win-summary {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(26,26,26,0.07);
+  font-size: 0.88rem;
+  line-height: 1.8;
+  opacity: 0.75;
+}
+
+.case-window.detail-window {
+  width: 760px;
+}
+.case-window.detail-window .win-body {
+  padding: 0;
+  max-height: min(68vh, 640px);
+  height: min(68vh, 640px);
+  overflow: hidden;
+  background: #FFFEFA;
+}
+.case-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #FFFEFA;
+}
+.mini-doc {
+  padding: 16px;
+}
+.mini-hero {
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255,254,250,0.72);
+}
+.mini-doc-id {
+  font-family: "Inter", monospace;
+  color: #3F51B5;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+.mini-doc h2 {
+  margin: 6px 0 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.55rem;
+  line-height: 1.18;
+}
+.mini-chips,
+.mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.mini-chips span,
+.mini-tags span {
+  border: 1px solid rgba(26,26,26,0.14);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  background: rgba(255,254,250,0.8);
+}
+.mini-chips span:nth-child(2),
+.mini-tags span:nth-child(3n+1) { border-color: rgba(63,81,181,0.35); }
+.mini-chips span:nth-child(3),
+.mini-tags span:nth-child(3n+2) { border-color: rgba(184,233,84,0.85); }
+.mini-tags span:nth-child(3n+3) { border-color: rgba(194,24,91,0.30); }
+.mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.mini-metric {
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255,254,250,0.7);
+}
+.mini-metric b {
+  display: block;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.05rem;
+}
+.mini-metric span {
+  display: block;
+  margin-top: 5px;
+  opacity: 0.56;
+  font-size: 0.68rem;
+}
+.mini-section {
+  margin-top: 10px;
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,254,250,0.64);
+}
+.mini-section-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(26,26,26,0.08);
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.86rem;
+}
+.mini-section-title code {
+  font-family: "Inter", monospace;
+  font-size: 0.66rem;
+  opacity: 0.38;
+}
+.mini-three,
+.mini-boundary,
+.mini-flow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.mini-flow { grid-template-columns: repeat(5, 1fr); }
+.mini-card,
+.mini-boundary-box,
+.mini-flow-step {
+  padding: 10px;
+  border-right: 1px solid rgba(26,26,26,0.08);
+  min-height: 72px;
+}
+.mini-card:last-child,
+.mini-boundary-box:last-child,
+.mini-flow-step:last-child { border-right: 0; }
+.mini-card em {
+  display: block;
+  font-style: normal;
+  font-family: "Inter", monospace;
+  color: #3F51B5;
+  font-size: 0.62rem;
+}
+.mini-card b,
+.mini-boundary-box b,
+.mini-flow-step b {
+  display: block;
+  margin-top: 5px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.88rem;
+}
+.mini-card span,
+.mini-boundary-box span,
+.mini-flow-step span {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  opacity: 0.58;
+}
+.mini-flow-step.hot {
+  background: rgba(194,24,91,0.07);
+}
+.mini-log {
+  display: grid;
+}
+.mini-log-row {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid rgba(26,26,26,0.08);
+  font-size: 0.74rem;
+}
+.mini-log-row:first-child { border-top: 0; }
+.mini-log-row code {
+  font-family: "Inter", monospace;
+  color: #3F51B5;
+}
+.mini-notify {
+  margin: 10px;
+  border-left: 4px solid #B8E954;
+  border-radius: 0 8px 8px 0;
+  background: rgba(184,233,84,0.14);
+  padding: 10px;
+}
+.mini-notify b {
+  font-family: "Noto Serif SC", serif;
+}
+.mini-notify div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.mini-notify span {
+  border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 6px;
+  padding: 5px 7px;
+  font-size: 0.68rem;
+  background: rgba(255,254,250,0.65);
+}
+
+/* 移动端：窗口全宽 */
+@media (max-width: 600px) {
+  .case-window { width: calc(100vw - 24px); }
+  .case-window.detail-window { width: calc(100vw - 24px); }
+  #ip-works { width: 120px; right: 16px; bottom: 80px; }
+  .win-body { max-height: 50vh; }
+  .case-window.detail-window .win-body { max-height: 62vh; }
+  .mini-metrics,
+  .mini-three,
+  .mini-boundary,
+  .mini-flow { grid-template-columns: 1fr; }
+  .mini-card,
+  .mini-boundary-box,
+  .mini-flow-step {
+    border-right: 0;
+    border-top: 1px solid rgba(26,26,26,0.08);
+  }
+  .mini-card:first-child,
+  .mini-boundary-box:first-child,
+  .mini-flow-step:first-child { border-top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+
+  <main class="content">
+    <div class="file-tag">[ 异常事件记录 · 共 6 份卷宗 · 点击打开 ]</div>
+
+    <div class="cases-list">
+      <div class="case-card" data-id="w1">
+        <div class="case-card-left">
+          <span class="case-id">#2024-001</span>
+          <span class="case-name">ifyoucan 实习 · 主编助理</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag archived-tag">已归档</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+
+      <div class="case-card" data-id="w2">
+        <div class="case-card-left">
+          <span class="case-id">#2024-002</span>
+          <span class="case-name">央视纪录片撰稿</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag archived-tag">已归档</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+
+      <div class="case-card" data-id="w3">
+        <div class="case-card-left">
+          <span class="case-id">#2025-001</span>
+          <span class="case-name">苏州智加科技 PR 实习</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag archived-tag">已归档</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+
+      <div class="case-card" data-id="w4">
+        <div class="case-card-left">
+          <span class="case-id">#2026-001</span>
+          <span class="case-name">个人简历修改网站</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag stalled-tag">搁置中</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+
+      <div class="case-card" data-id="w5">
+        <div class="case-card-left">
+          <span class="case-id">#2026-003</span>
+          <span class="case-name">可验证匿名评价协议</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag active-tag">⚡ 高度异常</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+
+      <div class="case-card" data-id="w6">
+        <div class="case-card-left">
+          <span class="case-id">#2026-005</span>
+          <span class="case-name">YouTube 爆款监测系统</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="case-tag running-tag">运行中</span>
+          <span class="case-open-hint">打开 ↗</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  
+</div>
+
+<!-- ══ 档案窗口们 ══ -->
+<div class="case-window" id="win-w1">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w1"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2024-001 · ifyoucan 实习</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2024-001</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">ifyoucan 实习 · 主编助理</span></div>
+    <div class="win-row"><span class="win-label">时间</span><span class="win-val">2024.02 — 2024.07</span></div>
+    <div class="win-row"><span class="win-label">形式</span><span class="win-val">线上实习</span></div>
+    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">主编助理</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
+    <div class="win-summary">内容策划方向，协助主编完成日常内容管理与策划工作。</div>
+  </div>
+</div>
+
+<div class="case-window" id="win-w2">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w2"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2024-002 · 央视纪录片撰稿</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2024-002</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">央视纪录片撰稿</span></div>
+    <div class="win-row"><span class="win-label">时间</span><span class="win-val">2024.10 — 2025.03</span></div>
+    <div class="win-row"><span class="win-label">形式</span><span class="win-val">线上实习</span></div>
+    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">纪录片撰稿</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
+    <div class="win-summary">为央视纪录片项目提供脚本撰稿支持，将复杂议题转化为可视化叙事语言。</div>
+  </div>
+</div>
+
+<div class="case-window" id="win-w3">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w3"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2025-001 · 苏州智加科技 PR 实习</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2025-001</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">苏州智加科技（Plus）PR 实习</span></div>
+    <div class="win-row"><span class="win-label">时间</span><span class="win-val">大三暑期</span></div>
+    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">PR 部门</span></div>
+    <div class="win-row"><span class="win-label">等级</span><span class="win-val">⚡ 高度活跃</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
+    <div class="win-summary">重卡自动驾驶公司 PR 部门，品牌管理、声量传播、内容营销全链路。深度参与央视《直通未来》微纪录片拍摄——创意输出、脚本撰写、拍摄统筹。对接中国交通报、新华社等媒体，在抖音/快手搭建媒体矩阵，单平台播放量 5000+。</div>
+  </div>
+</div>
+
+<div class="case-window detail-window" id="win-w4">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w4"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2026-001 · 个人简历修改网站</div>
+    <a class="win-newtab" href="events/resume-editor.html" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <iframe class="case-frame" src="events/resume-editor.html?embed=1" title="个人简历修改网站详情"></iframe>
+  </div>
+</div>
+
+<div class="case-window" id="win-w5">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w5"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2026-003 · 可验证匿名评价协议</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2026-003</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">可验证匿名评价协议</span></div>
+    <div class="win-row"><span class="win-label">等级</span><span class="win-val">⚡ 高度异常</span></div>
+    <div class="win-row"><span class="win-label">技术栈</span><span class="win-val">Solidity · SBT · Web3</span></div>
+    <div class="win-row"><span class="win-label">结果</span><span class="win-val">黑客松赛道二等奖</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
+    <div class="win-summary">两周从零交付 Web3 产品。现学 Solidity 写智能合约，SBT 身份锚定 + 可验证匿名 + 评价上链不可篡改。路演当天摔了电脑和 iPad，DDAO 前一小时代码抢救成功。结果超出预期。</div>
+  </div>
+</div>
+
+<div class="case-window detail-window" id="win-w6">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w6"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2026-005 · YouTube 爆款监测系统</div>
+    <a class="win-newtab" href="events/youtube-signal-hub.html" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <iframe class="case-frame" src="events/youtube-signal-hub.html?embed=1" title="YouTube 爆款监测系统详情"></iframe>
+  </div>
+</div>
+
+<!-- ══ IP 形象 ══ -->
+<img id="ip-works" src="assets/serena-fullbody.png" alt="Serena" draggable="false">
+
+<!-- ══ 底部导航 ══ -->
+<nav class="bottom-nav">
+  <a href="about.html">存在体概况</a>
+  <a href="works.html" class="active">异常事件记录</a>
+  <a href="talks.html">信号追踪</a>
+  <a href="contact.html">接触协议</a>
+</nav>
+
+<script>
+(function () {
+  /* ── 窗口 z-index 管理 ── */
+  let topZ = 300;
+  function bringToFront(win) {
+    win.style.zIndex = ++topZ;
+  }
+
+  /* ── 打开窗口 ── */
+  const openWindows = new Set();
+
+  // 初始位置：错开排列
+  const offsets = [
+    { x: 80,  y: 80  },
+    { x: 120, y: 100 },
+    { x: 160, y: 120 },
+    { x: 100, y: 90  },
+    { x: 140, y: 110 },
+    { x: 80,  y: 130 },
+  ];
+  let openCount = 0;
+
+  document.querySelectorAll('.case-card').forEach(function (card, idx) {
+    card.addEventListener('click', function () {
+      const id = card.dataset.id;
+      const win = document.getElementById('win-' + id);
+      if (!win) return;
+
+      if (openWindows.has(id)) {
+        bringToFront(win);
+        return;
+      }
+
+      // 设置初始位置
+      const off = offsets[openCount % offsets.length];
+      const cx = Math.min(off.x + openCount * 20, window.innerWidth - 500);
+      const cy = Math.min(off.y + openCount * 20, window.innerHeight - 400);
+      win.style.left = Math.max(12, cx) + 'px';
+      win.style.top  = Math.max(12, cy) + 'px';
+      openCount++;
+
+      win.classList.add('open');
+      openWindows.add(id);
+      bringToFront(win);
+
+      // 重播扫描线
+      const scan = win.querySelector('.win-scan');
+      if (scan) {
+        scan.style.animation = 'none';
+        requestAnimationFrame(() => {
+          scan.style.animation = '';
+        });
+      }
+    });
+  });
+
+  /* ── 关闭按钮 ── */
+  document.querySelectorAll('.win-dot-close').forEach(function (dot) {
+    dot.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const id = dot.dataset.close;
+      const win = document.getElementById(id);
+      if (win) {
+        win.classList.remove('open');
+        openWindows.delete(id.replace('win-', ''));
+      }
+    });
+  });
+
+  /* ── 窗口拖动 ── */
+  document.querySelectorAll('.win-titlebar').forEach(function (bar) {
+    const win = bar.closest('.case-window');
+    let dragging = false, offX = 0, offY = 0;
+
+    function startDrag(e) {
+      if (e.target.classList.contains('win-dot') ||
+          e.target.classList.contains('win-newtab')) return;
+      bringToFront(win);
+      dragging = true;
+      bar.classList.add('dragging');
+      const rect = win.getBoundingClientRect();
+      win.style.left = rect.left + 'px';
+      win.style.top  = rect.top  + 'px';
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      offX = cx - rect.left;
+      offY = cy - rect.top;
+      e.preventDefault();
+    }
+    function moveDrag(e) {
+      if (!dragging) return;
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      // 边界限制：不让标题栏趾出视口
+      const minY = 0;
+      const maxY = window.innerHeight - 44; // 至少保留标题栏高度
+      const minX = -(win.offsetWidth - 80); // 至少保留 80px 在屏内
+      const maxX = window.innerWidth - 80;
+      const newLeft = Math.min(maxX, Math.max(minX, cx - offX));
+      const newTop  = Math.min(maxY, Math.max(minY, cy - offY));
+      win.style.left = newLeft + 'px';
+      win.style.top  = newTop  + 'px';
+      e.preventDefault();
+    }
+    function endDrag() {
+      dragging = false;
+      bar.classList.remove('dragging');
+    }
+
+    bar.addEventListener('mousedown',  startDrag);
+    bar.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('mousemove',  moveDrag);
+    document.addEventListener('touchmove',  moveDrag, { passive: false });
+    document.addEventListener('mouseup',  endDrag);
+    document.addEventListener('touchend', endDrag);
+  });
+
+  /* ── 点击窗口体带到前面 ── */
+  document.querySelectorAll('.case-window').forEach(function (win) {
+    win.addEventListener('mousedown', function () { bringToFront(win); });
+    win.addEventListener('touchstart', function () { bringToFront(win); }, { passive: true });
+  });
+
+  /* ── IP 形象拖动 ── */
+  const ip = document.getElementById('ip-works');
+  let ipDragging = false, ipOffX = 0, ipOffY = 0;
+
+  function ipStart(e) {
+    const rect = ip.getBoundingClientRect();
+    ip.style.right  = 'auto';
+    ip.style.bottom = 'auto';
+    ip.style.left = rect.left + 'px';
+    ip.style.top  = rect.top  + 'px';
+    ip.style.transform = 'none';
+
+    ipDragging = true;
+    ip.classList.add('dragging');
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    ipOffX = cx - rect.left;
+    ipOffY = cy - rect.top;
+    e.preventDefault();
+  }
+  function ipMove(e) {
+    if (!ipDragging) return;
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    ip.style.left = (cx - ipOffX) + 'px';
+    ip.style.top  = (cy - ipOffY) + 'px';
+    e.preventDefault();
+  }
+  function ipEnd() {
+    ipDragging = false;
+    ip.classList.remove('dragging');
+  }
+
+  ip.addEventListener('mousedown',  ipStart);
+  ip.addEventListener('touchstart', ipStart, { passive: false });
+  document.addEventListener('mousemove', ipMove);
+  document.addEventListener('touchmove', ipMove, { passive: false });
+  document.addEventListener('mouseup',  ipEnd);
+  document.addEventListener('touchend', ipEnd);
+
+})();
+</script>
+</body>
+</html>
