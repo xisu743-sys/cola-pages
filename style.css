@@ -116,25 +116,26 @@ a { color: inherit; }
   margin-top: 64px;
 }
 .icp-footer {
-  font-size: .75rem;
+  font-size: .72rem;
   text-align: center;
-  opacity: .48;
+  color: rgba(26, 26, 26, 0.34);
   margin: 56px 0 96px;
 }
 .icp-footer a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 .icp-footer a:hover {
-  color: var(--accent);
+  color: rgba(63, 81, 181, 0.72);
   text-decoration: underline;
 }
 .icp-footer--fixed {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 8px;
-  z-index: 140;
+  bottom: 10px;
+  z-index: 80;
   margin: 0;
   pointer-events: none;
 }
@@ -634,6 +635,10 @@ a { color: inherit; }
 /* ═══════════ 响应式 ═══════════ */
 @media (max-width: 600px) {
   .page { padding: 32px 20px 100px; }
+
+  .icp-footer {
+    color: rgba(26, 26, 26, 0.38);
+  }
 
   .bottom-nav {
     bottom: 14px;
