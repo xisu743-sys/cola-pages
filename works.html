@@ -60,31 +60,32 @@ body.works-scene {
     var(--bg);
 }
 
-/* 手绘稚拙感地平线：一条线，IP 站在线上（参考 pudding.cool 的"空间感靠一条路径"手法） */
-.scene-ground {
+/* 观测信号层：心电式信号线被一笔一笔"画"出来，画完停留后淡出，
+   隔一会儿换个高度、换个波形重来——若隐若现的背景呼吸，不与角色抢戏 */
+.scene-signal {
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  height: 180px;
+  top: 40%;
+  height: 200px;
   z-index: 1;
   pointer-events: none;
+  transition: opacity 1.2s ease;
 }
-.ground-line,
-.ground-line-shadow {
+.scene-signal.fade { opacity: 0; }
+.signal-line {
   fill: none;
+  stroke: rgba(26,26,26,0.16);
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.ground-line {
-  stroke: rgba(26,26,26,0.45);
-  stroke-width: 2.4;
+.signal-spark {
+  fill: rgba(26,26,26,0.20);
+  opacity: 0;
+  transition: opacity 0.9s ease;
 }
-.ground-line-shadow {
-  stroke: rgba(26,26,26,0.13);
-  stroke-width: 4.5;
-  transform: translate(2px, 3px);
-}
+.signal-spark.show { opacity: 1; }
 
 /* 云：轮廓手绘感的三圆簇，而非实心色块（米白底上实心白云会隐形）。
    pudding 式持续横穿：从屏右缓慢飘到屏左循环，负 delay 错开各自初始位置 */
@@ -93,7 +94,7 @@ body.works-scene {
   left: 0;
   width: 34px;
   height: 34px;
-  border: 1.6px solid rgba(26,26,26,0.30);
+  border: 1.6px solid rgba(26,26,26,0.22);
   border-radius: 50%;
   background: rgba(255,254,250,0.92);
   z-index: 1;
@@ -103,7 +104,7 @@ body.works-scene {
 .scene-cloud::after {
   content: '';
   position: absolute;
-  border: 1.6px solid rgba(26,26,26,0.30);
+  border: 1.6px solid rgba(26,26,26,0.22);
   border-radius: 50%;
   background: rgba(255,254,250,0.92);
 }
@@ -149,7 +150,7 @@ body.works-scene {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  width: 132px;
+  width: 172px;
   background: none;
   border: none;
   padding: 0;
@@ -199,8 +200,8 @@ body.works-scene {
 /* 手绘线稿角色图（透明底 PNG，画中自带落地阴影，无需再画 CSS 阴影） */
 .scene-ip-figure {
   position: relative;
-  width: 128px;
-  height: 128px;
+  width: 165px;
+  height: 165px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -215,7 +216,7 @@ body.works-scene {
   -webkit-user-drag: none;
 }
 /* 打扫这张自带书架/收纳筐等场景道具，画幅更宽，放大一号 */
-.scene-ip[data-id="w8"] .scene-ip-figure { width: 152px; height: 152px; }
+.scene-ip[data-id="w8"] .scene-ip-figure { width: 195px; height: 195px; }
 .scene-ip:hover .scene-ip-figure {
   transform: translateY(-4px);
 }
@@ -572,7 +573,7 @@ body.works-scene {
   }
   .train-scene::-webkit-scrollbar { display: none; }
   .scene-caption { top: 18px; font-size: 0.64rem; }
-  .scene-ground { top: 42%; height: 130px; }
+  .scene-signal { top: 30%; height: 150px; }
   .scene-ip {
     position: static !important;
     transform: none !important;
@@ -600,39 +601,35 @@ body.works-scene {
 
 <div class="train-scene" id="train-scene">
 
-  <div class="scene-ground">
-    <svg viewBox="0 0 1000 140" preserveAspectRatio="none" width="100%" height="100%">
-      <path class="ground-line-shadow" d="M0,84 C60,64 90,104 150,89 C210,74 250,114 320,94 C390,74 430,109 500,92 C570,76 610,106 680,90 C750,74 800,112 860,94 C920,78 950,102 1000,86" />
-      <path class="ground-line" d="M0,82 C60,62 90,102 150,87 C210,72 250,112 320,92 C390,72 430,107 500,90 C570,74 610,104 680,88 C750,72 800,110 860,92 C920,76 950,100 1000,84" />
+  <div class="scene-signal" id="scene-signal" aria-hidden="true">
+    <svg viewBox="0 0 1200 200" preserveAspectRatio="none" width="100%" height="100%">
+      <path class="signal-line" id="signal-line" d="" />
     </svg>
   </div>
 
-  <span class="scene-cloud" style="top:12%;--cs:0.85;--cx:8%;animation-duration:80s;animation-delay:-8s"></span>
-  <span class="scene-cloud" style="top:22%;--cs:1.1;--cx:26%;animation-duration:68s;animation-delay:-20s"></span>
-  <span class="scene-cloud" style="top:10%;--cs:0.9;--cx:47%;animation-duration:86s;animation-delay:-43s"></span>
-  <span class="scene-cloud" style="top:24%;--cs:1;--cx:66%;animation-duration:74s;animation-delay:-52s"></span>
-  <span class="scene-cloud" style="top:14%;--cs:0.8;--cx:84%;animation-duration:62s;animation-delay:-56s"></span>
+  <span class="scene-cloud" style="top:9%;--cs:0.9;--cx:22%;animation-duration:86s;animation-delay:-43s"></span>
+  <span class="scene-cloud" style="top:15%;--cs:0.8;--cx:72%;animation-duration:62s;animation-delay:-56s"></span>
 
-  <button class="scene-ip" data-id="w6" style="left:14%;top:60%;--ip-accent:#3F51B5">
+  <button class="scene-ip" data-id="w6" style="left:20%;top:38%;--ip-accent:#3F51B5">
     <span class="scene-ip-bubble" id="scene-bubble" aria-hidden="true"><span id="scene-bubble-text"></span></span>
     <span class="scene-ip-figure"><img src="assets/ip-music.png" alt="戴耳机听音乐的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">YouTube 爆款监测</span>
   </button>
-  <button class="scene-ip" data-id="w4" style="left:38%;top:59%;--ip-accent:#FF7A59">
+  <button class="scene-ip" data-id="w4" style="left:36%;top:55%;--ip-accent:#FF7A59">
     <span class="scene-ip-figure"><img src="assets/ip-check.png" alt="举着对错牌的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">简历修改网站</span>
   </button>
-  <button class="scene-ip" data-id="w7" style="left:62%;top:60%;--ip-accent:#C2185B">
+  <button class="scene-ip" data-id="w7" style="left:66%;top:29%;--ip-accent:#C2185B">
     <span class="scene-ip-figure"><img src="assets/ip-telescope.png" alt="举着望远镜观测的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">LockLock</span>
   </button>
-  <button class="scene-ip" data-id="w8" style="left:74%;top:58.5%;--ip-accent:#5C9E3D">
+  <button class="scene-ip" data-id="w8" style="left:72%;top:64%;--ip-accent:#5C9E3D">
     <span class="scene-ip-figure"><img src="assets/ip-clean.png" alt="打扫房间的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">Home</span>
   </button>
 </div>
 
-<div class="scene-caption">[ 异常事件记录 · 沿线观测 4 例 · 点击角色查看 ]</div>
+<div class="scene-caption">[ 异常事件记录 · 捕获信号 4 例 · 点击角色查看 ]</div>
 
 <div class="scene-dots">
   <span class="scene-dot"></span>
@@ -953,13 +950,84 @@ body.works-scene {
     });
   });
 
+  /* ── 观测信号背景：信号线被逐笔画出 → 尖峰处闪现小星 → 停留 → 淡出 → 换高度换波形重来 ── */
+  (function () {
+    const layer = document.getElementById('scene-signal');
+    const line  = document.getElementById('signal-line');
+    if (!layer || !line) return;
+    const svg = line.ownerSVGElement;
+    const NS = 'http://www.w3.org/2000/svg';
+    const SPARK_D = 'M0,-11 Q2,-2 11,0 Q2,2 0,11 Q-2,2 -11,0 Q-2,-2 0,-11 Z';
+
+    // 波形变体：平静段 + 心电式脉冲簇；最后一个是彩蛋——信号收进一颗小爱心后不再继续
+    const VARIANTS = [
+      { d: 'M0,104 L200,104 L218,66 L236,132 L252,104 L470,104 L484,84 L498,124 L514,44 L530,158 L546,72 L560,120 L574,104 L1200,104',
+        sparks: [[310,66,1], [612,58,0.8], [668,142,0.65]] },
+      { d: 'M0,104 L150,104 L166,80 L180,126 L194,104 L420,104 L436,60 L452,148 L468,76 L482,118 L496,104 L760,104 L774,88 L788,118 L800,104 L1200,104',
+        sparks: [[524,54,0.9], [842,78,0.7], [252,148,0.6]] },
+      { d: 'M0,104 L240,104 L256,70 L272,136 L288,104 L520,104 L536,50 L554,156 L570,80 L584,120 L598,104 L820,104 C818,74 840,58 860,64 C874,68 884,80 888,92 C892,80 902,68 916,64 C936,58 958,74 956,104 C954,126 928,146 892,168 L886,172 M978,104 L1200,104',
+        sparks: [[646,58,0.9], [1000,72,1], [934,148,0.7]] },
+    ];
+    // 每轮换个高度出现（%）；手机上避开下方的沙发 IP 和导航区
+    const TOPS = window.matchMedia('(max-width: 600px)').matches ? [12, 30, 48] : [16, 40, 66];
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      line.setAttribute('d', VARIANTS[0].d);  // 静态一条淡线，不播绘制
+      return;
+    }
+
+    let round = 0, lastTop = -1, sparkEls = [];
+
+    function playRound() {
+      // 每 4 轮遇到一次爱心彩蛋，其余在前两种波形里交替
+      const v = (round % 4 === 3) ? VARIANTS[2] : VARIANTS[round % 2];
+      let top;
+      do { top = TOPS[Math.floor(Math.random() * TOPS.length)]; } while (top === lastTop);
+      lastTop = top;
+      round++;
+
+      layer.style.top = top + '%';
+      line.setAttribute('d', v.d);
+      sparkEls.forEach(function (s) { s.remove(); });
+      sparkEls = v.sparks.map(function (sp) {
+        const el = document.createElementNS(NS, 'path');
+        el.setAttribute('class', 'signal-spark');
+        el.setAttribute('d', SPARK_D);
+        el.setAttribute('transform', 'translate(' + sp[0] + ',' + sp[1] + ') scale(' + sp[2] + ')');
+        svg.appendChild(el);
+        return el;
+      });
+
+      const len = line.getTotalLength();
+      line.style.transition = 'none';
+      line.style.strokeDasharray = len;
+      line.style.strokeDashoffset = len;
+      layer.classList.remove('fade');
+
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        const drawSec = Math.min(9, Math.max(5, len / 240));  // 笔速：路径越长画得越久
+        line.style.transition = 'stroke-dashoffset ' + drawSec + 's linear';
+        line.style.strokeDashoffset = '0';
+        setTimeout(function () {
+          sparkEls.forEach(function (s) { s.classList.add('show'); });
+        }, drawSec * 700);  // 画到七成时星星次第亮起
+        setTimeout(function () {
+          layer.classList.add('fade');
+          setTimeout(playRound, 3800);  // 淡出 1.2s + 空档，再起下一条
+        }, drawSec * 1000 + 3200);      // 画完停留 3.2s
+      }); });
+    }
+
+    setTimeout(playRound, 1600);  // 等打字机气泡先开场
+  })();
+
   /* ── 进场一次性打字机气泡（pudding 式）：逐字打出后停留再淡出 ── */
   (function () {
     const bubble = document.getElementById('scene-bubble');
     const bubbleText = document.getElementById('scene-bubble-text');
     if (!bubble || !bubbleText) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const msg = '沿线观测到 4 起异常事件，点击角色查看档案。';
+    const msg = '捕获到 4 条异常信号，点击角色查看档案。';
     setTimeout(function () {
       bubble.classList.add('show');
       let i = 0;
