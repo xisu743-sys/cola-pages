@@ -60,68 +60,56 @@ body.works-scene {
     var(--bg);
 }
 
-/* 车窗带：3 扇窗，浅蓝天空 + 云 + 远山 */
-.scene-sky {
+/* 手绘稚拙感地平线：一条线，IP 站在线上（参考 pudding.cool 的"空间感靠一条路径"手法） */
+.scene-ground {
   position: absolute;
-  top: 7%;
-  left: 6%;
-  right: 6%;
-  height: 27vh;
-  min-height: 150px;
-  max-height: 230px;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 180px;
   z-index: 1;
-  display: flex;
-  gap: 3.5%;
+  pointer-events: none;
 }
-.scene-window {
-  position: relative;
-  flex: 1;
-  overflow: hidden;
-  border-radius: 14px;
-  border: 1.5px solid rgba(26,26,26,0.14);
-  background: linear-gradient(180deg, #E7F2FC 0%, #F5FAFE 62%, #FFFEFA 100%);
-  box-shadow: inset 0 0 0 5px rgba(255,254,250,0.9), 0 1px 4px rgba(0,0,0,0.04);
+.ground-line,
+.ground-line-shadow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.scene-window::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 5px;
-  bottom: 5px;
-  width: 1.5px;
-  background: rgba(26,26,26,0.10);
+.ground-line {
+  stroke: rgba(26,26,26,0.45);
+  stroke-width: 2.4;
 }
-.scene-hill {
-  position: absolute;
-  bottom: 14%;
-  left: -8%;
-  width: 116%;
-  height: 38%;
-  background: rgba(43,127,216,0.10);
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+.ground-line-shadow {
+  stroke: rgba(26,26,26,0.13);
+  stroke-width: 4.5;
+  transform: translate(2px, 3px);
 }
-.scene-hill::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -1px;
-  height: 1px;
-  background: rgba(26,26,26,0.12);
-}
+
+/* 云：轮廓手绘感的三圆簇，而非实心色块（米白底上实心白云会隐形） */
 .scene-cloud {
   position: absolute;
-  width: 30px;
-  height: 12px;
-  background: #FFFEFA;
-  border-radius: 50px;
-  box-shadow:
-    11px -5px 0 -2px #FFFEFA,
-    -11px -3px 0 -3px rgba(255,254,250,0.9),
-    5px 4px 0 -1px rgba(255,254,250,0.85);
-  animation: cloudDrift 24s ease-in-out infinite alternate;
+  width: 34px;
+  height: 34px;
+  border: 1.6px solid rgba(26,26,26,0.30);
+  border-radius: 50%;
+  background: rgba(255,254,250,0.92);
+  z-index: 1;
+  animation: cloudDrift 26s ease-in-out infinite alternate;
 }
+.scene-cloud::before,
+.scene-cloud::after {
+  content: '';
+  position: absolute;
+  border: 1.6px solid rgba(26,26,26,0.30);
+  border-radius: 50%;
+  background: rgba(255,254,250,0.92);
+}
+.scene-cloud::before { width: 24px; height: 24px; left: -14px; top: 9px; }
+.scene-cloud::after  { width: 19px; height: 19px; right: -11px; top: 11px; }
 @keyframes cloudDrift {
   from { transform: translateX(0); }
-  to   { transform: translateX(20px); }
+  to   { transform: translateX(22px); }
 }
 
 .scene-caption {
@@ -164,42 +152,6 @@ body.works-scene {
 }
 .scene-ip.dragging { cursor: grabbing; transition: none; }
 
-/* 每个 IP 背后一处极淡的车厢角落线索（座位/桌板/行李架），暗示空间关系而非写实车厢 */
-.scene-ip::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-  background: rgba(26,26,26,0.035);
-  border: 1px solid rgba(26,26,26,0.08);
-}
-.scene-ip[data-id="w6"]::before {
-  width: 108px; height: 128px;
-  left: 50%; top: 6px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-}
-.scene-ip[data-id="w4"]::before {
-  width: 168px; height: 58px;
-  left: 50%; top: 14px;
-  transform: translateX(-50%);
-  border-radius: 10px;
-}
-.scene-ip[data-id="w7"]::before {
-  width: 96px; height: 112px;
-  left: 8px; top: 0;
-  border-radius: 4px 24px 4px 4px;
-  border-width: 1px 1px 0 0;
-  background: none;
-}
-.scene-ip[data-id="w8"]::before {
-  width: 132px; height: 8px;
-  left: 50%; top: -6px;
-  transform: translateX(-50%);
-  border-radius: 3px;
-  box-shadow: -40px 10px 0 -3px rgba(26,26,26,0.06), 40px 10px 0 -3px rgba(26,26,26,0.06);
-}
-
 .scene-ip-figure {
   position: relative;
   width: 74px;
@@ -227,6 +179,19 @@ body.works-scene {
   border-radius: 50%;
   background: var(--ip-accent, var(--accent));
   border: 1.5px solid var(--bg);
+}
+/* 站在线上的落地小阴影，替代此前的座位/桌板等写实车厢线索 */
+.scene-ip-figure::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 32px;
+  height: 7px;
+  background: rgba(26,26,26,0.10);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
 }
 .scene-ip:hover .scene-ip-figure {
   transform: translateY(-3px);
@@ -585,14 +550,13 @@ body.works-scene {
   }
   .train-scene::-webkit-scrollbar { display: none; }
   .scene-caption { top: 18px; font-size: 0.64rem; }
-  .scene-sky { top: 6%; height: 20vh; min-height: 110px; }
+  .scene-ground { top: 42%; height: 130px; }
   .scene-ip {
     position: static !important;
     transform: none !important;
     flex: 0 0 100%;
     justify-content: center;
   }
-  .scene-ip::before { display: none; }
   .scene-dots { display: flex; }
   .mini-metrics,
   .mini-three,
@@ -614,43 +578,38 @@ body.works-scene {
 
 <div class="train-scene" id="train-scene">
 
-  <div class="scene-sky">
-    <div class="scene-window">
-      <div class="scene-hill"></div>
-      <span class="scene-cloud" style="left:14%;top:22%;animation-delay:0s"></span>
-      <span class="scene-cloud" style="left:52%;top:44%;animation-delay:-9s"></span>
-    </div>
-    <div class="scene-window">
-      <div class="scene-hill"></div>
-      <span class="scene-cloud" style="left:22%;top:30%;animation-delay:-4s"></span>
-      <span class="scene-cloud" style="left:60%;top:18%;animation-delay:-14s"></span>
-    </div>
-    <div class="scene-window">
-      <div class="scene-hill"></div>
-      <span class="scene-cloud" style="left:18%;top:36%;animation-delay:-7s"></span>
-      <span class="scene-cloud" style="left:56%;top:20%;animation-delay:-18s"></span>
-    </div>
+  <div class="scene-ground">
+    <svg viewBox="0 0 1000 140" preserveAspectRatio="none" width="100%" height="100%">
+      <path class="ground-line-shadow" d="M0,84 C60,64 90,104 150,89 C210,74 250,114 320,94 C390,74 430,109 500,92 C570,76 610,106 680,90 C750,74 800,112 860,94 C920,78 950,102 1000,86" />
+      <path class="ground-line" d="M0,82 C60,62 90,102 150,87 C210,72 250,112 320,92 C390,72 430,107 500,90 C570,74 610,104 680,88 C750,72 800,110 860,92 C920,76 950,100 1000,84" />
+    </svg>
   </div>
 
-  <button class="scene-ip" data-id="w6" style="left:16%;top:62%;--ip-accent:#3F51B5">
+  <span class="scene-cloud" style="left:8%;top:12%;transform:scale(0.85);animation-delay:0s"></span>
+  <span class="scene-cloud" style="left:26%;top:22%;transform:scale(1.1);animation-delay:-6s"></span>
+  <span class="scene-cloud" style="left:47%;top:10%;transform:scale(0.9);animation-delay:-12s"></span>
+  <span class="scene-cloud" style="left:66%;top:24%;transform:scale(1);animation-delay:-3s"></span>
+  <span class="scene-cloud" style="left:84%;top:14%;transform:scale(0.8);animation-delay:-16s"></span>
+
+  <button class="scene-ip" data-id="w6" style="left:14%;top:60%;--ip-accent:#3F51B5">
     <span class="scene-ip-figure">YT</span>
     <span class="scene-ip-label">YouTube 爆款监测</span>
   </button>
-  <button class="scene-ip" data-id="w4" style="left:41%;top:70%;--ip-accent:#FF7A59">
+  <button class="scene-ip" data-id="w4" style="left:38%;top:60%;--ip-accent:#FF7A59">
     <span class="scene-ip-figure">简历</span>
     <span class="scene-ip-label">简历修改网站</span>
   </button>
-  <button class="scene-ip" data-id="w7" style="left:65%;top:58%;--ip-accent:#C2185B">
+  <button class="scene-ip" data-id="w7" style="left:62%;top:60%;--ip-accent:#C2185B">
     <span class="scene-ip-figure">Lock</span>
     <span class="scene-ip-label">LockLock</span>
   </button>
-  <button class="scene-ip" data-id="w8" style="left:80%;top:42%;--ip-accent:#5C9E3D">
+  <button class="scene-ip" data-id="w8" style="left:74%;top:62%;--ip-accent:#5C9E3D">
     <span class="scene-ip-figure">Home</span>
     <span class="scene-ip-label">Home</span>
   </button>
 </div>
 
-<div class="scene-caption">[ 异常事件记录 · 车厢 4 席 · 点击角色查看 ]</div>
+<div class="scene-caption">[ 异常事件记录 · 沿线观测 4 例 · 点击角色查看 ]</div>
 
 <div class="scene-dots">
   <span class="scene-dot"></span>
