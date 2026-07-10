@@ -416,84 +416,124 @@ a { color: inherit; }
   background-size: 32px 32px;
 }
 
-.signal-list {
+.ticket-group { margin-bottom: 8px; }
+.ticket-group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  margin: 44px 0 16px;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+}
+.ticket-group:first-child .ticket-group-head { margin-top: 0; }
+.ticket-group-en {
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  opacity: 0.9;
+}
+.ticket-group-index {
+  font-size: 0.68rem;
+  opacity: 0.35;
+  letter-spacing: 0.04em;
+}
+
+.ticket-list {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-.signal-item {
-  margin-bottom: 36px;
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.07);
-}
-.signal-item:last-child { border-bottom: none; }
-
-.signal-top {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
   gap: 14px;
-  margin-bottom: 6px;
 }
-.signal-id {
+.ticket {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(26, 26, 26, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ticket:hover {
+  border-color: rgba(63, 81, 181, 0.4);
+  box-shadow: 0 2px 14px rgba(63, 81, 181, 0.08);
+}
+.ticket-main {
+  flex: 1;
+  min-width: 0;
+  padding: 16px 18px;
+}
+.ticket-no {
   font-family: var(--font-title);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--accent);
-  opacity: 0.6;
+  opacity: 0.65;
   letter-spacing: 0.08em;
-  flex-shrink: 0;
+  margin-bottom: 5px;
 }
-.signal-date {
-  font-size: 0.78rem;
-  opacity: 0.4;
-  flex-shrink: 0;
-}
-.signal-title {
+.ticket-title {
   font-family: var(--font-title);
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   line-height: 1.4;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
-.signal-summary {
-  font-size: 0.9rem;
-  opacity: 0.55;
-  margin-bottom: 10px;
-  line-height: 1.6;
+.ticket-desc {
+  font-size: 0.86rem;
+  line-height: 1.65;
+  opacity: 0.6;
 }
-.signal-bottom {
+.ticket-tear {
+  position: relative;
+  flex-shrink: 0;
+  width: 0;
+  align-self: stretch;
+  border-left: 1.5px dashed rgba(26, 26, 26, 0.22);
+}
+.ticket-tear::before,
+.ticket-tear::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: var(--bg);
+  border: 1px solid rgba(26, 26, 26, 0.12);
+  border-radius: 50%;
+}
+.ticket-tear::before { top: 0; transform: translate(-50%, -50%); }
+.ticket-tear::after { bottom: 0; transform: translate(-50%, 50%); }
+.ticket-stub {
+  flex-shrink: 0;
+  width: 76px;
+  padding: 14px 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(63, 81, 181, 0.04);
 }
-.signal-strength {
-  display: flex;
-  gap: 3px;
-  align-items: center;
+.ticket-barcode {
+  width: 100%;
+  height: 26px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 1.5px,
+    transparent 1.5px 4px
+  );
+  opacity: 0.28;
 }
-.strength-bar {
-  display: inline-block;
-  width: 12px;
-  height: 10px;
-  border-radius: 2px;
-}
-.strength-bar.on  { background: var(--accent); opacity: 0.7; }
-.strength-bar.off { background: var(--ink);   opacity: 0.12; }
-.signal-label {
-  font-size: 0.72rem;
-  opacity: 0.4;
-  margin-right: 4px;
-}
-.signal-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.signal-tag {
-  font-size: 0.68rem;
-  padding: 1px 8px;
-  border: 1px solid rgba(26, 26, 26, 0.2);
-  border-radius: 999px;
-  opacity: 0.55;
+.ticket-stub-code {
+  font-family: var(--font-title);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  opacity: 0.45;
+  white-space: nowrap;
 }
 
 /* ═══════════ 接触协议 ═══════════ */
@@ -675,6 +715,12 @@ a { color: inherit; }
     margin: 0 auto 16px;
     transform: none;
   }
+
+  .ticket-stub { width: 60px; padding: 12px 6px; }
+  .ticket-main { padding: 14px 14px; }
+  .ticket-title { font-size: 1rem; }
+  .ticket-desc { font-size: 0.83rem; }
+  .ticket-group-head { margin-top: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
