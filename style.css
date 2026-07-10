@@ -527,66 +527,31 @@ a { color: inherit; }
   line-height: 1.7;
   opacity: 0.62;
 }
+/* 画廊陈列：作品横排一行、中线等高悬挂，白色装裱衬板 + 轻投影，展签在下 */
 .signal-sample-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
 }
 .signal-sample-card {
-  border: 1px solid rgba(43, 127, 216, 0.12);
-  border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(250, 248, 242, 0.94)),
-    var(--bg);
-  overflow: visible;
-  box-shadow: 0 10px 30px rgba(43, 127, 216, 0.07);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-.signal-sample-card:hover {
-  border-color: rgba(43, 127, 216, 0.32);
-  box-shadow: 0 14px 36px rgba(43, 127, 216, 0.12);
-  transform: translateY(-2px);
+  flex: 0 0 auto;
+  width: var(--pw, 240px);
 }
 .signal-sample-media {
   position: relative;
-  width: auto;
-  margin: 16px 16px 0;
+  width: 100%;
   aspect-ratio: 9 / 12.4;
-  overflow: visible;
-  border: 0;
-  border-radius: 4px;
-  background:
-    linear-gradient(rgba(43, 127, 216, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(43, 127, 216, 0.035) 1px, transparent 1px),
-    #fffefa;
-  background-size: 18px 18px;
-  box-shadow: inset 0 0 0 10px rgba(255, 254, 250, 0.94);
-}
-.signal-sample-media::before,
-.signal-sample-media::after {
-  content: '';
-  position: absolute;
-  inset: 7px;
-  border: 1.5px solid rgba(43, 127, 216, 0.34);
-  border-radius: 5px 3px 6px 4px;
-  pointer-events: none;
-  z-index: 2;
-}
-.signal-sample-media::before {
-  transform: rotate(-0.45deg);
-}
-.signal-sample-media::after {
-  inset: 11px 9px 9px 12px;
-  border-color: rgba(43, 127, 216, 0.18);
-  border-style: dashed;
-  border-radius: 3px 6px 4px 5px;
-  transform: rotate(0.32deg);
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.05),
+    0 12px 28px rgba(26, 26, 26, 0.10);
 }
 .signal-shot {
   position: absolute;
-  inset: 16px;
-  width: calc(100% - 32px);
-  height: calc(100% - 32px);
+  inset: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
   object-fit: contain;
   opacity: 0;
   transform: scale(0.985);
@@ -600,50 +565,65 @@ a { color: inherit; }
 .signal-nav {
   position: absolute;
   top: 50%;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(43, 127, 216, 0.18);
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(43, 127, 216, 0.25);
   border-radius: 50%;
-  background: rgba(255, 254, 250, 0.88);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--accent);
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
   z-index: 3;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  opacity: 0;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
-.signal-nav-prev { left: 12px; transform: translateY(-50%); }
-.signal-nav-next { right: 12px; transform: translateY(-50%); }
+.signal-sample-media:hover .signal-nav,
+.signal-nav:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .signal-nav { opacity: 1; }
+}
+.signal-nav-prev { left: 8px; transform: translateY(-50%); }
+.signal-nav-next { right: 8px; transform: translateY(-50%); }
 .signal-nav:hover {
-  border-color: rgba(43, 127, 216, 0.45);
+  border-color: rgba(43, 127, 216, 0.5);
   background: rgba(43, 127, 216, 0.08);
 }
 .signal-nav-prev:hover { transform: translateY(-50%) translateX(-1px); }
 .signal-nav-next:hover { transform: translateY(-50%) translateX(1px); }
+/* 展签：美术馆小标签卡，挂在作品左下方 */
 .signal-sample-meta {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px 14px;
-  padding: 16px 18px 18px;
-  border-top: 1px solid rgba(43, 127, 216, 0.09);
+  align-items: baseline;
+  gap: 6px 12px;
+  width: fit-content;
+  max-width: 92%;
+  margin: 20px auto 0 0;
+  padding: 9px 12px 10px;
+  border: 1px solid rgba(43, 127, 216, 0.26);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.05);
 }
 .signal-sample-mark {
   font-family: var(--font-title);
-  font-size: 1rem;
+  font-size: 0.88rem;
   color: var(--accent);
 }
 .signal-sample-count {
   font-family: var(--font-body);
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
-  color: rgba(43, 127, 216, 0.55);
+  color: rgba(43, 127, 216, 0.6);
 }
 .signal-sample-meta p {
   grid-column: 1 / -1;
   margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.65;
-  opacity: 0.54;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  opacity: 0.52;
 }
 .ticket-v-tear {
   position: relative;
@@ -882,18 +862,21 @@ a { color: inherit; }
     font-size: 0.86rem;
   }
   .signal-sample-grid {
-    grid-template-columns: 1fr;
-    gap: 22px;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .signal-sample-card {
+    width: min(300px, 82vw);
   }
   .signal-sample-media {
     aspect-ratio: 9 / 13.2;
   }
   .signal-nav {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
   }
   .signal-sample-meta {
-    padding: 14px 16px 16px;
+    margin-top: 16px;
   }
 
   .ticket-grid { grid-template-columns: 1fr; gap: 24px; }
