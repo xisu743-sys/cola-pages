@@ -4,7 +4,7 @@
    Noto Serif SC + Inter
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Serif+SC:wght@400;500;700&family=Schoolbell&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Long+Cang&family=Noto+Serif+SC:wght@400;500;700&family=Schoolbell&display=swap');
 
 :root {
   --font-title: "Noto Serif SC", "PingFang SC", "Noto Sans SC", serif;
@@ -477,13 +477,13 @@ a { color: inherit; }
 }
 .signal-library-head h1 {
   margin: 0;
-  font-family: var(--font-title);
-  font-size: clamp(1.08rem, 2.6vw, 1.32rem);
-  font-weight: 500;
+  font-family: 'Long Cang', var(--font-title), cursive;
+  font-size: clamp(1.7rem, 4vw, 2.1rem);
+  font-weight: 400;
   line-height: 1.4;
   color: var(--accent);
 }
-/* 画廊陈列：作品两两一排、中线等高悬挂，白色装裱衬板 + 轻投影，展签在下 */
+/* 堆叠卡片陈列：图片即卡片（圆角 + 投影），后面露出两张叠影，点击翻下一张 */
 .signal-sample-grid {
   display: flex;
   flex-wrap: wrap;
@@ -493,94 +493,53 @@ a { color: inherit; }
 }
 .signal-sample-card {
   flex: 0 0 auto;
-  width: var(--pw, 240px);
+  width: calc(var(--w) * 1px);
 }
-.signal-sample-media {
+.signal-stack {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 12.4;
-  background: #ffffff;
-  box-shadow:
-    0 1px 2px rgba(26, 26, 26, 0.05),
-    0 12px 28px rgba(26, 26, 26, 0.10);
-}
-.signal-shot {
-  position: absolute;
-  inset: 10px;
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
-  object-fit: contain;
-  opacity: 0;
-  transform: scale(0.985);
-  transition: opacity 0.24s ease, transform 0.24s ease;
-  z-index: 1;
-}
-.signal-shot.is-active {
-  opacity: 1;
-  transform: scale(1);
-}
-.signal-nav {
-  position: absolute;
-  top: 50%;
-  width: 30px;
-  height: 30px;
-  border: 1px solid rgba(43, 127, 216, 0.25);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--accent);
-  font-size: 1.1rem;
-  line-height: 1;
+  aspect-ratio: var(--w) / var(--h);
   cursor: pointer;
-  z-index: 3;
+}
+.signal-stack .signal-shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(26, 26, 26, 0.12);
   opacity: 0;
-  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transform: translateY(44px) scale(0.92);
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
-.signal-sample-media:hover .signal-nav,
-.signal-nav:focus-visible {
-  opacity: 1;
-}
-@media (hover: none) {
-  .signal-nav { opacity: 1; }
-}
-.signal-nav-prev { left: 8px; transform: translateY(-50%); }
-.signal-nav-next { right: 8px; transform: translateY(-50%); }
-.signal-nav:hover {
-  border-color: rgba(43, 127, 216, 0.5);
-  background: rgba(43, 127, 216, 0.08);
-}
-.signal-nav-prev:hover { transform: translateY(-50%) translateX(-1px); }
-.signal-nav-next:hover { transform: translateY(-50%) translateX(1px); }
-/* 展签：美术馆小标签卡，挂在作品左下方 */
+/* 卡片高、缩放会抵消位移，偏移量要够大叠影才露得出来 */
+.signal-shot.pos-0 { z-index: 4; transform: translateY(0) scale(1); opacity: 1; }
+.signal-shot.pos-1 { z-index: 3; transform: translateY(22px) scale(0.96); opacity: 0.8; }
+.signal-shot.pos-2 { z-index: 2; transform: translateY(44px) scale(0.92); opacity: 0.6; }
+.signal-shot.is-leaving { z-index: 5; transform: translateX(-120%) rotate(-5deg); opacity: 0; }
+/* 展签：无框文字，居中放在卡片下方 */
 .signal-sample-meta {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: 6px 12px;
-  width: fit-content;
-  max-width: 92%;
-  margin: 20px auto 0 0;
-  padding: 9px 12px 10px;
-  border: 1px solid rgba(43, 127, 216, 0.26);
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(26, 26, 26, 0.05);
+  margin: 46px 0 0;
+  text-align: center;
 }
 .signal-sample-mark {
   font-family: var(--font-title);
-  font-size: 0.88rem;
-  color: var(--accent);
+  font-size: 0.92rem;
+  color: var(--ink);
 }
 .signal-sample-count {
   font-family: var(--font-body);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
-  color: rgba(43, 127, 216, 0.6);
+  color: var(--dim);
+  margin-left: 10px;
 }
 .signal-sample-meta p {
-  grid-column: 1 / -1;
-  margin: 0;
-  font-size: 0.72rem;
-  line-height: 1.6;
-  opacity: 0.52;
+  margin: 7px 0 0;
+  font-size: 0.74rem;
+  line-height: 1.7;
+  opacity: 0.55;
 }
 /* ═══════════ 接触协议 ═══════════ */
 .contact-protocol-tag { margin-bottom: 28px; }
@@ -775,15 +734,8 @@ a { color: inherit; }
   .signal-sample-card {
     width: min(330px, 86vw);
   }
-  .signal-sample-media {
-    aspect-ratio: 9 / 13.2;
-  }
-  .signal-nav {
-    width: 38px;
-    height: 38px;
-  }
   .signal-sample-meta {
-    margin-top: 16px;
+    margin-top: 32px;
   }
 
   .signal-pillars { grid-template-columns: 1fr; gap: 36px; padding-top: 4px; }
