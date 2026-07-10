@@ -146,111 +146,23 @@
   .tabs a:hover { color: var(--primary); }
   .tabs a:hover::after { transform: scaleX(1); }
 
-  /* ===== Hero: Sparkles Text headline (#44) + Morphing Text file preview (#45) ===== */
+  /* ===== Hero: centered title, nothing else ===== */
   .hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(56px, 8vh, 96px) 0 clamp(90px, 11vh, 130px);
+    padding: clamp(130px, 20vh, 224px) 0 clamp(120px, 17vh, 196px);
+    text-align: center;
   }
-  .hero-grid {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1.15fr .85fr;
-    align-items: center;
-    gap: clamp(40px, 6vw, 88px);
-  }
-  .hero h1 {
-    max-width: 11em;
-    margin: 0 0 24px;
-    line-height: 1.16;
-  }
-  .sparkles-wrap { position: relative; display: inline-block; padding: 6px 6px 6px 0; }
-  .sparkles-text {
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-title {
     font-family: 'Noto Serif SC', serif;
     font-weight: 900;
-    font-size: clamp(2.9rem, 7.2vw, 5.3rem);
-    color: var(--primary);
-    position: relative;
-    z-index: 1;
-  }
-  .sparkle { position: absolute; pointer-events: none; z-index: 2; animation: sparkle-anim .8s ease-in-out infinite; }
-  @keyframes sparkle-anim {
-    0%, 100% { opacity: 0; transform: scale(0) rotate(75deg); }
-    50% { opacity: 1; transform: scale(1) rotate(120deg); }
-  }
-  .hero-sub {
-    max-width: 30em;
-    color: var(--ink-light);
-    font-size: 1.02rem;
-    line-height: 1.9;
-  }
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    margin-top: 34px;
-    padding: 10px 20px;
-    border: 2px dashed rgba(204, 41, 54, .4);
-    border-radius: 999px;
-    color: var(--decor);
-    font-family: 'Schoolbell', cursive;
-    font-size: 1.15rem;
-    transform: rotate(-2.5deg);
-  }
-
-  .hero-visual { position: relative; height: clamp(300px, 34vw, 420px); display: grid; place-items: center; }
-  .file-frame {
-    width: min(360px, 100%);
-    background: #fff;
-    border: 1.5px solid var(--line);
-    box-shadow: 0 20px 44px rgba(26, 26, 46, .08);
-  }
-  .file-frame-bar {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 12px 16px;
-    background: var(--cream-dark);
-    border-bottom: 1px solid var(--line);
-  }
-  .file-frame-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dc, var(--line)); }
-  .file-frame-label {
-    margin-left: auto;
-    font-family: 'Fira Code', monospace;
-    font-size: .68rem;
-    color: var(--ink-faint);
-  }
-  .file-frame-body {
-    position: relative;
-    height: 74px;
-    padding: 0 18px;
-  }
-  .morph-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
-  .morph-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Fira Code', monospace;
-    font-weight: 600;
-    font-size: clamp(.86rem, 2.1vw, 1.02rem);
+    font-size: clamp(3rem, 8vw, 6.4rem);
+    line-height: 1.05;
+    letter-spacing: -.01em;
     color: var(--ink);
-    white-space: nowrap;
   }
-  .file-frame-caption {
-    padding: 0 18px 20px;
-    text-align: center;
-    font-family: 'Noto Sans SC', sans-serif;
-    font-size: .74rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .hero-title span { color: var(--primary); }
 
   /* ===== Scene head ===== */
   .section-head { margin-bottom: clamp(36px, 6vw, 64px); }
@@ -262,7 +174,7 @@
   }
 
   /* ===== 01 现场: icon-side cards (component #1D) ===== */
-  .scene-01 { position: relative; padding: clamp(90px, 12vh, 150px) 0; }
+  .scene-01 { position: relative; background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; }
   .icon-card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -303,7 +215,7 @@
   .icon-card-body em { font-style: normal; font-weight: 700; color: var(--decor); }
 
   /* ===== 02 搭建: horizontal timeline (component #41) ===== */
-  .scene-02 { position: relative; background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; overflow: hidden; }
+  .scene-02 { position: relative; padding: clamp(90px, 12vh, 150px) 0; overflow: hidden; }
   .timeline-wrap { overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
   .timeline-wrap::-webkit-scrollbar { display: none; }
   .timeline-hint {
@@ -369,7 +281,7 @@
   }
 
   /* ===== 03 其他功能: tag cards (component #1C) ===== */
-  .scene-03 { padding: clamp(90px, 12vh, 150px) 0; }
+  .scene-03 { background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; }
   .tag-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -446,11 +358,8 @@
   html.is-embed .tabs { gap: 14px; }
   html.is-embed .tabs a { font-size: .76rem; }
   html.is-embed .wrap { width: min(660px, calc(100% - 40px)); }
-  html.is-embed .hero { padding: 40px 0 60px; }
-  html.is-embed .hero-grid { grid-template-columns: 1fr; min-height: auto; gap: 40px; }
-  html.is-embed .hero h1 { max-width: 9em; }
-  html.is-embed .sparkles-text { font-size: clamp(2.1rem, 6vw, 3.2rem); }
-  html.is-embed .hero-visual { height: 190px; order: -1; }
+  html.is-embed .hero { padding: 56px 0 60px; }
+  html.is-embed .hero-title { font-size: clamp(2.2rem, 8vw, 3.4rem); }
   html.is-embed .scene-01, html.is-embed .scene-02, html.is-embed .scene-03 { padding: 60px 0; }
   html.is-embed .icon-card-grid { grid-template-columns: 1fr; }
   html.is-embed .section-head { margin-bottom: 32px; }
@@ -460,8 +369,6 @@
   html.is-embed .closing-text { font-size: clamp(1.8rem, 6vw, 2.6rem); }
 
   @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; min-height: auto; gap: 56px; }
-    .hero-visual { order: -1; height: 200px; }
     .icon-card-grid { grid-template-columns: 1fr; }
     .tag-grid { grid-template-columns: repeat(2, 1fr); }
     html.is-embed .tag-grid { grid-template-columns: 1fr; }
@@ -474,8 +381,7 @@
     .logo { font-size: 1.1rem; }
     .tabs { gap: 16px; }
     .tabs a { font-size: .78rem; }
-    .hero h1 { max-width: 9em; }
-    .sparkles-text { font-size: clamp(2.3rem, 9vw, 3rem); }
+    .hero-title { font-size: clamp(2.3rem, 11vw, 3.4rem); }
     .icon-card { flex-direction: column; }
     .tag-grid { grid-template-columns: 1fr; }
     .closing-text { max-width: 10ch; }
@@ -501,29 +407,9 @@
 
   <section class="hero" id="hero">
     <span class="deco-word" style="right:-.1em; top:-.08em">Resume</span>
-    <div class="wrap hero-grid">
-      <div class="hero-copy reveal">
-        <span class="eyebrow">Personal Project · 2024</span>
-        <h1><span class="sparkles-wrap" data-sparkle-colors="#F07040,#F07040,#2B7FD8"><span class="sparkles-text">再也不用<br>担心弄混简历</span></span></h1>
-        <p class="hero-sub">粘贴 JD，AI 自动改写简历、按岗位管理版本、追踪每一次投递。</p>
-        <span class="hero-badge">第一个完整的前后端项目</span>
-      </div>
-      <div class="hero-visual reveal reveal-d2" aria-hidden="true">
-        <div class="file-frame">
-          <div class="file-frame-bar">
-            <span class="file-frame-dot" style="--dc:var(--decor)"></span>
-            <span class="file-frame-dot" style="--dc:var(--primary)"></span>
-            <span class="file-frame-dot" style="--dc:var(--accent)"></span>
-            <span class="file-frame-label">正在打开…</span>
-          </div>
-          <div class="file-frame-body">
-            <div class="morph-container" data-morph-texts="简历-产品-v3.docx,简历-运营-最终版.docx,简历-真的最终版.docx,简历.pdf">
-              <span class="morph-text"></span>
-              <span class="morph-text"></span>
-            </div>
-          </div>
-          <p class="file-frame-caption">多版本文件 → 一份可追溯定稿</p>
-        </div>
+    <div class="wrap">
+      <div class="hero-inner reveal">
+        <h1 class="hero-title">Resume <span>Editor</span></h1>
       </div>
     </div>
   </section>
@@ -666,67 +552,6 @@
     });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // Sparkles Text (#44)
-  document.querySelectorAll('[data-sparkle-colors]').forEach(el => {
-    const colors = el.dataset.sparkleColors.split(',');
-    for (let i = 0; i < 8; i++) {
-      const s = document.createElement('span');
-      s.className = 'sparkle';
-      s.style.left = Math.random() * 100 + '%';
-      s.style.top = Math.random() * 100 + '%';
-      s.style.animationDelay = (Math.random() * 2) + 's';
-      s.style.animationDuration = (.6 + Math.random() * .6) + 's';
-      const size = 12 + Math.random() * 14;
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      s.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 21 21"><path d="M9.82531 0.843845C10.0553 0.215178 10.9446 0.215178 11.1746 0.843845L11.8618 2.72026C12.4006 4.19229 12.3916 6.39157 13.5 7.5C14.6084 8.60843 16.8077 8.59935 18.2797 9.13822L20.1561 9.82534C20.7858 10.0553 20.7858 10.9447 20.1561 11.1747L18.2797 11.8618C16.8077 12.4007 14.6084 12.3916 13.5 13.5C12.3916 14.6084 12.4006 16.8077 11.8618 18.2798L11.1746 20.1562C10.9446 20.7858 10.0553 20.7858 9.82531 20.1562L9.13819 18.2798C8.59932 16.8077 8.60843 14.6084 7.5 13.5C6.39157 12.3916 4.19225 12.4007 2.72023 11.8618L0.843814 11.1747C0.215148 10.9447 0.215148 10.0553 0.843814 9.82534L2.72023 9.13822C4.19225 8.59935 6.39157 8.60843 7.5 7.5C8.60843 6.39157 8.59932 4.19229 9.13819 2.72026L9.82531 0.843845Z" fill="${color}"/></svg>`;
-      el.appendChild(s);
-    }
-    setInterval(() => {
-      el.querySelectorAll('.sparkle').forEach(sp => {
-        sp.style.left = Math.random() * 100 + '%';
-        sp.style.top = Math.random() * 100 + '%';
-      });
-    }, 3000);
-  });
-
-  // Morphing Text (#45)
-  (function () {
-    const morphTime = .5, cooldownTime = 2.2;
-    document.querySelectorAll('[data-morph-texts]').forEach(container => {
-      const texts = container.dataset.morphTexts.split(',');
-      const [t1, t2] = container.querySelectorAll('.morph-text');
-      let idx = 0, morph = 0, cooldown = cooldownTime, time = new Date();
-      function setStyles(f) {
-        t2.style.opacity = `${Math.pow(f, .4) * 100}%`;
-        const inv = 1 - f;
-        t1.style.opacity = `${Math.pow(inv, .4) * 100}%`;
-        t1.textContent = texts[idx % texts.length];
-        t2.textContent = texts[(idx + 1) % texts.length];
-      }
-      function animate() {
-        requestAnimationFrame(animate);
-        const now = new Date(), dt = (now - time) / 1000;
-        time = now;
-        cooldown -= dt;
-        if (cooldown <= 0) {
-          morph -= cooldown;
-          cooldown = 0;
-          let f = morph / morphTime;
-          if (f > 1) { cooldown = cooldownTime; f = 1; }
-          setStyles(f);
-          if (f === 1) idx++;
-        } else {
-          morph = 0;
-          t2.style.filter = 'none'; t2.style.opacity = '100%';
-          t1.style.filter = 'none'; t1.style.opacity = '0%';
-        }
-      }
-      t1.textContent = texts[0];
-      t2.textContent = texts[1];
-      animate();
-    });
-  })();
 </script>
 </body>
 </html>
