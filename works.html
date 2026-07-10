@@ -98,6 +98,105 @@ html.vt-entry body { animation: none; opacity: 1; }
   margin-left: 8px;
 }
 
+/* ══ 列车车厢场景（骨架，占位视觉，待替换水彩插画）══ */
+.train-scene {
+  position: relative;
+  margin: 8px 0 20px;
+  min-height: 460px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(26,26,26,0.08);
+  background:
+    radial-gradient(ellipse 130px 100px at 12% 26%, rgba(255,196,110,0.22), transparent 70%),
+    radial-gradient(ellipse 130px 100px at 40% 26%, rgba(255,196,110,0.22), transparent 70%),
+    radial-gradient(ellipse 130px 100px at 68% 26%, rgba(255,196,110,0.22), transparent 70%),
+    radial-gradient(ellipse 130px 100px at 92% 26%, rgba(255,196,110,0.22), transparent 70%),
+    linear-gradient(180deg, #2a2140 0%, #201830 55%, #171220 100%);
+}
+.train-scene::after {
+  content: '占位场景 · 待替换水彩插画';
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Inter", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.32);
+  pointer-events: none;
+}
+
+.scene-ip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 108px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: left 0.25s ease, top 0.25s ease;
+}
+.scene-ip.dragging { cursor: grabbing; transition: none; }
+.scene-ip-figure {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,0.42);
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.62);
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.7rem;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.scene-ip:hover .scene-ip-figure {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.12);
+}
+.scene-ip-label {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.88);
+  background: rgba(0,0,0,0.3);
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-family: "Noto Serif SC", serif;
+  pointer-events: none;
+}
+
+.scene-dots {
+  display: none;
+  justify-content: center;
+  gap: 6px;
+  margin: -10px 0 24px;
+}
+.scene-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(26,26,26,0.18);
+  transition: background 0.2s ease;
+}
+.scene-dot.active { background: #3F51B5; }
+
+.legacy-label {
+  font-family: "Inter", monospace;
+  font-size: 0.72rem;
+  opacity: 0.35;
+  letter-spacing: 0.08em;
+  margin: 4px 0 10px;
+}
+
 /* ══ 档案窗口 ══ */
 .case-window {
   position: fixed;
@@ -406,6 +505,26 @@ html.vt-entry body { animation: none; opacity: 1; }
   #ip-works { width: 120px; right: 16px; bottom: 80px; }
   .win-body { max-height: 50vh; }
   .case-window.detail-window .win-body { max-height: 62vh; }
+
+  /* 移动端：车厢横向滑动，一屏一个座位/IP */
+  .train-scene {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-height: 340px;
+    border-radius: 14px;
+  }
+  .train-scene::-webkit-scrollbar { display: none; }
+  .train-scene::after { top: 10px; font-size: 0.6rem; }
+  .scene-ip {
+    position: static !important;
+    transform: none !important;
+    flex: 0 0 100%;
+    justify-content: center;
+  }
+  .scene-dots { display: flex; }
   .mini-metrics,
   .mini-three,
   .mini-boundary,
@@ -427,8 +546,34 @@ html.vt-entry body { animation: none; opacity: 1; }
 
 
   <main class="content">
-    <div class="file-tag">[ 异常事件记录 · 共 6 份卷宗 · 点击打开 ]</div>
+    <div class="file-tag">[ 异常事件记录 · 车厢 4 席 · 点击角色查看 ]</div>
 
+    <div class="train-scene" id="train-scene">
+      <button class="scene-ip" data-id="w6" style="left:15%;top:56%">
+        <span class="scene-ip-figure">YT</span>
+        <span class="scene-ip-label">YouTube 爆款监测</span>
+      </button>
+      <button class="scene-ip" data-id="w4" style="left:40%;top:62%">
+        <span class="scene-ip-figure">简历</span>
+        <span class="scene-ip-label">简历修改网站</span>
+      </button>
+      <button class="scene-ip" data-id="w7" style="left:65%;top:50%">
+        <span class="scene-ip-figure">Lock</span>
+        <span class="scene-ip-label">LockLock</span>
+      </button>
+      <button class="scene-ip" data-id="w8" style="left:88%;top:64%">
+        <span class="scene-ip-figure">Home</span>
+        <span class="scene-ip-label">Home</span>
+      </button>
+    </div>
+    <div class="scene-dots">
+      <span class="scene-dot"></span>
+      <span class="scene-dot"></span>
+      <span class="scene-dot"></span>
+      <span class="scene-dot"></span>
+    </div>
+
+    <div class="legacy-label">更早的记录</div>
     <div class="cases-list">
       <div class="case-card" data-id="w1">
         <div class="case-card-left">
@@ -463,17 +608,6 @@ html.vt-entry body { animation: none; opacity: 1; }
         </div>
       </div>
 
-      <div class="case-card" data-id="w4">
-        <div class="case-card-left">
-          <span class="case-id">#2026-001</span>
-          <span class="case-name">个人简历修改网站</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag stalled-tag">搁置中</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-
       <div class="case-card" data-id="w5">
         <div class="case-card-left">
           <span class="case-id">#2026-003</span>
@@ -481,17 +615,6 @@ html.vt-entry body { animation: none; opacity: 1; }
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="case-tag active-tag">⚡ 高度异常</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-
-      <div class="case-card" data-id="w6">
-        <div class="case-card-left">
-          <span class="case-id">#2026-005</span>
-          <span class="case-name">YouTube 爆款监测系统</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag running-tag">运行中</span>
           <span class="case-open-hint">打开 ↗</span>
         </div>
       </div>
@@ -622,6 +745,44 @@ html.vt-entry body { animation: none; opacity: 1; }
   </div>
 </div>
 
+<div class="case-window" id="win-w7">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w7"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2026-004 · LockLock</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2026-004</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">LockLock（锁屏单词 + 待办）</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">内容待补充</span></div>
+    <div class="win-summary">内容待补充 —— 锁屏浮现单词与待办气泡的产品，占位窗口，等文案到位后替换。</div>
+  </div>
+</div>
+
+<div class="case-window" id="win-w8">
+  <div class="win-titlebar">
+    <div class="win-dots">
+      <div class="win-dot win-dot-close" data-close="win-w8"></div>
+      <div class="win-dot win-dot-min"></div>
+      <div class="win-dot win-dot-expand"></div>
+    </div>
+    <div class="win-title">#2026-006 · Home</div>
+    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
+  </div>
+  <div class="win-scan"></div>
+  <div class="win-body">
+    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2026-006</span></div>
+    <div class="win-row"><span class="win-label">名称</span><span class="win-val">Home（房间物品清单 + 出行 SOP）</span></div>
+    <div class="win-row"><span class="win-label">状态</span><span class="win-val">内容待补充</span></div>
+    <div class="win-summary">内容待补充 —— 房间物品清单与出行 SOP 产品，占位窗口，等文案到位后替换。</div>
+  </div>
+</div>
+
 <!-- ══ IP 形象 ══ -->
 <img id="ip-works" src="assets/serena-fullbody.png" alt="Serena" draggable="false">
 
@@ -659,37 +820,40 @@ html.vt-entry body { animation: none; opacity: 1; }
   ];
   let openCount = 0;
 
-  document.querySelectorAll('.case-card').forEach(function (card, idx) {
-    card.addEventListener('click', function () {
-      const id = card.dataset.id;
-      const win = document.getElementById('win-' + id);
-      if (!win) return;
+  function openCaseWindow(id) {
+    const win = document.getElementById('win-' + id);
+    if (!win) return;
 
-      if (openWindows.has(id)) {
-        bringToFront(win);
-        return;
-      }
-
-      // 设置初始位置
-      const off = offsets[openCount % offsets.length];
-      const cx = Math.min(off.x + openCount * 20, window.innerWidth - 500);
-      const cy = Math.min(off.y + openCount * 20, window.innerHeight - 400);
-      win.style.left = Math.max(12, cx) + 'px';
-      win.style.top  = Math.max(12, cy) + 'px';
-      openCount++;
-
-      win.classList.add('open');
-      openWindows.add(id);
+    if (openWindows.has(id)) {
       bringToFront(win);
+      return;
+    }
 
-      // 重播扫描线
-      const scan = win.querySelector('.win-scan');
-      if (scan) {
-        scan.style.animation = 'none';
-        requestAnimationFrame(() => {
-          scan.style.animation = '';
-        });
-      }
+    // 设置初始位置
+    const off = offsets[openCount % offsets.length];
+    const cx = Math.min(off.x + openCount * 20, window.innerWidth - 500);
+    const cy = Math.min(off.y + openCount * 20, window.innerHeight - 400);
+    win.style.left = Math.max(12, cx) + 'px';
+    win.style.top  = Math.max(12, cy) + 'px';
+    openCount++;
+
+    win.classList.add('open');
+    openWindows.add(id);
+    bringToFront(win);
+
+    // 重播扫描线
+    const scan = win.querySelector('.win-scan');
+    if (scan) {
+      scan.style.animation = 'none';
+      requestAnimationFrame(() => {
+        scan.style.animation = '';
+      });
+    }
+  }
+
+  document.querySelectorAll('.case-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      openCaseWindow(card.dataset.id);
     });
   });
 
@@ -799,6 +963,84 @@ html.vt-entry body { animation: none; opacity: 1; }
   document.addEventListener('touchmove', ipMove, { passive: false });
   document.addEventListener('mouseup',  ipEnd);
   document.addEventListener('touchend', ipEnd);
+
+  /* ── 车厢场景：每个 IP 可拖动、双击回预设位置、单击（不拖动）开档案窗口 ── */
+  function isDesktopScene() {
+    return window.matchMedia('(min-width: 601px)').matches;
+  }
+
+  const scene = document.getElementById('train-scene');
+  document.querySelectorAll('.scene-ip').forEach(function (sip) {
+    const anchorLeft = sip.style.left;
+    const anchorTop  = sip.style.top;
+    let dragging = false, moved = false, startX = 0, startY = 0, offX = 0, offY = 0;
+
+    function start(e) {
+      if (!isDesktopScene()) return; // 移动端改为横滑翻页，不支持拖动
+      const rect = sip.getBoundingClientRect();
+      const sceneRect = scene.getBoundingClientRect();
+      sip.style.left = (rect.left - sceneRect.left + rect.width / 2) + 'px';
+      sip.style.top  = (rect.top  - sceneRect.top  + rect.height / 2) + 'px';
+      dragging = true;
+      moved = false;
+      sip.classList.add('dragging');
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      startX = cx; startY = cy;
+      offX = cx - rect.left;
+      offY = cy - rect.top;
+      e.preventDefault();
+    }
+    function move(e) {
+      if (!dragging) return;
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      if (Math.abs(cx - startX) > 4 || Math.abs(cy - startY) > 4) moved = true;
+      const sceneRect = scene.getBoundingClientRect();
+      let newLeft = cx - sceneRect.left - offX + sip.offsetWidth  / 2;
+      let newTop  = cy - sceneRect.top  - offY + sip.offsetHeight / 2;
+      newLeft = Math.max(16, Math.min(sceneRect.width  - 16, newLeft));
+      newTop  = Math.max(16, Math.min(sceneRect.height - 16, newTop));
+      sip.style.left = newLeft + 'px';
+      sip.style.top  = newTop  + 'px';
+      e.preventDefault();
+    }
+    function end() {
+      if (!dragging) return;
+      dragging = false;
+      sip.classList.remove('dragging');
+      if (!moved) openCaseWindow(sip.dataset.id);
+    }
+
+    sip.addEventListener('mousedown',  start);
+    sip.addEventListener('touchstart', start, { passive: false });
+    document.addEventListener('mousemove', move);
+    document.addEventListener('touchmove', move, { passive: false });
+    document.addEventListener('mouseup',  end);
+    document.addEventListener('touchend', end);
+
+    sip.addEventListener('dblclick', function () {
+      sip.style.left = anchorLeft;
+      sip.style.top  = anchorTop;
+    });
+
+    // 移动端：无拖动，单击直接开窗
+    sip.addEventListener('click', function () {
+      if (!isDesktopScene()) openCaseWindow(sip.dataset.id);
+    });
+  });
+
+  // 移动端横滑翻页：滚动位置对应更新指示点
+  if (scene) {
+    const dots = document.querySelectorAll('.scene-dot');
+    if (dots.length) {
+      scene.addEventListener('scroll', function () {
+        const idx = Math.round(scene.scrollLeft / scene.clientWidth);
+        dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+      });
+      dots[0] && dots[0].classList.add('active');
+    }
+  }
 
 })();
 </script>
