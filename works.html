@@ -15,13 +15,15 @@ if (sessionStorage.getItem('serena-entering-works') === '1') {
 <style>
 html.vt-entry body { animation: none; opacity: 1; }
 
-/* 与 index.html 预览卡片配对，跨页跳转时浏览器原生变形过渡 */
-.file-tag              { view-transition-name: vt-file-tag; }
-.case-card[data-id="w1"] { view-transition-name: vt-case-w1; }
-.case-card[data-id="w2"] { view-transition-name: vt-case-w2; }
-.case-card[data-id="w3"] { view-transition-name: vt-case-w3; }
-.case-card[data-id="w4"] { view-transition-name: vt-case-w4; }
-.case-card[data-id="w5"] { view-transition-name: vt-case-w5; }
+/* ══ 整页夜间车厢背景 ══ */
+body.works-scene {
+  background: linear-gradient(180deg, #2a2140 0%, #201830 55%, #171220 100%);
+  overflow-x: hidden;
+}
+body.works-scene .icp-footer {
+  color: rgba(255,255,255,0.4);
+}
+
 /* ══ IP 形象（右下角，可拖动）══ */
 #ip-works {
   position: fixed;
@@ -44,90 +46,51 @@ html.vt-entry body { animation: none; opacity: 1; }
   50%      { transform: scale(1.015) translateY(-5px); }
 }
 
-/* ══ 卷宗列表 ══ */
-.cases-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.case-card {
-  border: 1px solid rgba(26,26,26,0.12);
-  border-radius: 8px;
-  padding: 14px 18px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.18s ease, border-color 0.18s ease;
-  user-select: none;
-}
-.case-card:hover {
-  background: rgba(63,81,181,0.04);
-  border-color: rgba(63,81,181,0.25);
-}
-.case-card-left { display: flex; align-items: center; gap: 14px; }
-.case-id {
-  font-family: "Inter", monospace;
-  font-size: 0.72rem;
-  opacity: 0.4;
-  letter-spacing: 0.05em;
-  min-width: 72px;
-}
-.case-name {
-  font-family: "Noto Serif SC", serif;
-  font-size: 1rem;
-}
-.case-tag {
-  font-size: 0.7rem;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: 1px solid;
-  white-space: nowrap;
-}
-.running-tag  { border-color: #B8E954; color: #4a6400; }
-.active-tag   { border-color: #3F51B5; color: #3F51B5; }
-.archived-tag { border-color: rgba(26,26,26,0.25); color: rgba(26,26,26,0.45); }
-.stalled-tag  { border-color: #C2185B; color: #C2185B; opacity: 0.7; }
-
-.case-open-hint {
-  font-size: 0.72rem;
-  opacity: 0.3;
-  letter-spacing: 0.06em;
-  margin-left: 8px;
-}
-
 /* ══ 列车车厢场景（骨架，占位视觉，待替换水彩插画）══ */
+/* 铺满整个视口的固定背景层，人物直接站在这层上，不再关在卡片里 */
 .train-scene {
-  position: relative;
-  margin: 8px 0 20px;
-  min-height: 460px;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(26,26,26,0.08);
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background:
-    radial-gradient(ellipse 130px 100px at 12% 26%, rgba(255,196,110,0.22), transparent 70%),
-    radial-gradient(ellipse 130px 100px at 40% 26%, rgba(255,196,110,0.22), transparent 70%),
-    radial-gradient(ellipse 130px 100px at 68% 26%, rgba(255,196,110,0.22), transparent 70%),
-    radial-gradient(ellipse 130px 100px at 92% 26%, rgba(255,196,110,0.22), transparent 70%),
+    radial-gradient(ellipse 160px 120px at 15% 30%, rgba(255,196,110,0.20), transparent 70%),
+    radial-gradient(ellipse 160px 120px at 40% 30%, rgba(255,196,110,0.20), transparent 70%),
+    radial-gradient(ellipse 160px 120px at 65% 30%, rgba(255,196,110,0.20), transparent 70%),
+    radial-gradient(ellipse 160px 120px at 88% 30%, rgba(255,196,110,0.20), transparent 70%),
     linear-gradient(180deg, #2a2140 0%, #201830 55%, #171220 100%);
 }
 .train-scene::after {
   content: '占位场景 · 待替换水彩插画';
   position: absolute;
-  top: 14px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
   font-family: "Inter", monospace;
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.32);
+  color: rgba(255,255,255,0.28);
   pointer-events: none;
+}
+
+.scene-caption {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  padding: 3px 12px;
+  white-space: nowrap;
 }
 
 .scene-ip {
   position: absolute;
+  z-index: 2;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
@@ -176,26 +139,22 @@ html.vt-entry body { animation: none; opacity: 1; }
 
 .scene-dots {
   display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 2;
   justify-content: center;
   gap: 6px;
-  margin: -10px 0 24px;
 }
 .scene-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: rgba(26,26,26,0.18);
+  background: rgba(255,255,255,0.25);
   transition: background 0.2s ease;
 }
-.scene-dot.active { background: #3F51B5; }
-
-.legacy-label {
-  font-family: "Inter", monospace;
-  font-size: 0.72rem;
-  opacity: 0.35;
-  letter-spacing: 0.08em;
-  margin: 4px 0 10px;
-}
+.scene-dot.active { background: #fff; }
 
 /* ══ 档案窗口 ══ */
 .case-window {
@@ -513,11 +472,9 @@ html.vt-entry body { animation: none; opacity: 1; }
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    min-height: 340px;
-    border-radius: 14px;
   }
   .train-scene::-webkit-scrollbar { display: none; }
-  .train-scene::after { top: 10px; font-size: 0.6rem; }
+  .scene-caption { top: 20px; font-size: 0.66rem; }
   .scene-ip {
     position: static !important;
     transform: none !important;
@@ -541,156 +498,37 @@ html.vt-entry body { animation: none; opacity: 1; }
 }
 </style>
 </head>
-<body>
-<div class="page">
+<body class="works-scene">
 
+<div class="train-scene" id="train-scene">
+  <button class="scene-ip" data-id="w6" style="left:12%;top:48%">
+    <span class="scene-ip-figure">YT</span>
+    <span class="scene-ip-label">YouTube 爆款监测</span>
+  </button>
+  <button class="scene-ip" data-id="w4" style="left:37%;top:58%">
+    <span class="scene-ip-figure">简历</span>
+    <span class="scene-ip-label">简历修改网站</span>
+  </button>
+  <button class="scene-ip" data-id="w7" style="left:61%;top:42%">
+    <span class="scene-ip-figure">Lock</span>
+    <span class="scene-ip-label">LockLock</span>
+  </button>
+  <button class="scene-ip" data-id="w8" style="left:80%;top:55%">
+    <span class="scene-ip-figure">Home</span>
+    <span class="scene-ip-label">Home</span>
+  </button>
+</div>
 
-  <main class="content">
-    <div class="file-tag">[ 异常事件记录 · 车厢 4 席 · 点击角色查看 ]</div>
+<div class="scene-caption">[ 异常事件记录 · 车厢 4 席 · 点击角色查看 ]</div>
 
-    <div class="train-scene" id="train-scene">
-      <button class="scene-ip" data-id="w6" style="left:15%;top:56%">
-        <span class="scene-ip-figure">YT</span>
-        <span class="scene-ip-label">YouTube 爆款监测</span>
-      </button>
-      <button class="scene-ip" data-id="w4" style="left:40%;top:62%">
-        <span class="scene-ip-figure">简历</span>
-        <span class="scene-ip-label">简历修改网站</span>
-      </button>
-      <button class="scene-ip" data-id="w7" style="left:65%;top:50%">
-        <span class="scene-ip-figure">Lock</span>
-        <span class="scene-ip-label">LockLock</span>
-      </button>
-      <button class="scene-ip" data-id="w8" style="left:88%;top:64%">
-        <span class="scene-ip-figure">Home</span>
-        <span class="scene-ip-label">Home</span>
-      </button>
-    </div>
-    <div class="scene-dots">
-      <span class="scene-dot"></span>
-      <span class="scene-dot"></span>
-      <span class="scene-dot"></span>
-      <span class="scene-dot"></span>
-    </div>
-
-    <div class="legacy-label">更早的记录</div>
-    <div class="cases-list">
-      <div class="case-card" data-id="w1">
-        <div class="case-card-left">
-          <span class="case-id">#2024-001</span>
-          <span class="case-name">ifyoucan 实习 · 主编助理</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag archived-tag">已归档</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-
-      <div class="case-card" data-id="w2">
-        <div class="case-card-left">
-          <span class="case-id">#2024-002</span>
-          <span class="case-name">央视纪录片撰稿</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag archived-tag">已归档</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-
-      <div class="case-card" data-id="w3">
-        <div class="case-card-left">
-          <span class="case-id">#2025-001</span>
-          <span class="case-name">苏州智加科技 PR 实习</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag archived-tag">已归档</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-
-      <div class="case-card" data-id="w5">
-        <div class="case-card-left">
-          <span class="case-id">#2026-003</span>
-          <span class="case-name">可验证匿名评价协议</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="case-tag active-tag">⚡ 高度异常</span>
-          <span class="case-open-hint">打开 ↗</span>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  
+<div class="scene-dots">
+  <span class="scene-dot"></span>
+  <span class="scene-dot"></span>
+  <span class="scene-dot"></span>
+  <span class="scene-dot"></span>
 </div>
 
 <!-- ══ 档案窗口们 ══ -->
-<div class="case-window" id="win-w1">
-  <div class="win-titlebar">
-    <div class="win-dots">
-      <div class="win-dot win-dot-close" data-close="win-w1"></div>
-      <div class="win-dot win-dot-min"></div>
-      <div class="win-dot win-dot-expand"></div>
-    </div>
-    <div class="win-title">#2024-001 · ifyoucan 实习</div>
-    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
-  </div>
-  <div class="win-scan"></div>
-  <div class="win-body">
-    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2024-001</span></div>
-    <div class="win-row"><span class="win-label">名称</span><span class="win-val">ifyoucan 实习 · 主编助理</span></div>
-    <div class="win-row"><span class="win-label">时间</span><span class="win-val">2024.02 — 2024.07</span></div>
-    <div class="win-row"><span class="win-label">形式</span><span class="win-val">线上实习</span></div>
-    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">主编助理</span></div>
-    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
-    <div class="win-summary">内容策划方向，协助主编完成日常内容管理与策划工作。</div>
-  </div>
-</div>
-
-<div class="case-window" id="win-w2">
-  <div class="win-titlebar">
-    <div class="win-dots">
-      <div class="win-dot win-dot-close" data-close="win-w2"></div>
-      <div class="win-dot win-dot-min"></div>
-      <div class="win-dot win-dot-expand"></div>
-    </div>
-    <div class="win-title">#2024-002 · 央视纪录片撰稿</div>
-    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
-  </div>
-  <div class="win-scan"></div>
-  <div class="win-body">
-    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2024-002</span></div>
-    <div class="win-row"><span class="win-label">名称</span><span class="win-val">央视纪录片撰稿</span></div>
-    <div class="win-row"><span class="win-label">时间</span><span class="win-val">2024.10 — 2025.03</span></div>
-    <div class="win-row"><span class="win-label">形式</span><span class="win-val">线上实习</span></div>
-    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">纪录片撰稿</span></div>
-    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
-    <div class="win-summary">为央视纪录片项目提供脚本撰稿支持，将复杂议题转化为可视化叙事语言。</div>
-  </div>
-</div>
-
-<div class="case-window" id="win-w3">
-  <div class="win-titlebar">
-    <div class="win-dots">
-      <div class="win-dot win-dot-close" data-close="win-w3"></div>
-      <div class="win-dot win-dot-min"></div>
-      <div class="win-dot win-dot-expand"></div>
-    </div>
-    <div class="win-title">#2025-001 · 苏州智加科技 PR 实习</div>
-    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
-  </div>
-  <div class="win-scan"></div>
-  <div class="win-body">
-    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2025-001</span></div>
-    <div class="win-row"><span class="win-label">名称</span><span class="win-val">苏州智加科技（Plus）PR 实习</span></div>
-    <div class="win-row"><span class="win-label">时间</span><span class="win-val">大三暑期</span></div>
-    <div class="win-row"><span class="win-label">岗位</span><span class="win-val">PR 部门</span></div>
-    <div class="win-row"><span class="win-label">等级</span><span class="win-val">⚡ 高度活跃</span></div>
-    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
-    <div class="win-summary">重卡自动驾驶公司 PR 部门，品牌管理、声量传播、内容营销全链路。深度参与央视《直通未来》微纪录片拍摄——创意输出、脚本撰写、拍摄统筹。对接中国交通报、新华社等媒体，在抖音/快手搭建媒体矩阵，单平台播放量 5000+。</div>
-  </div>
-</div>
-
 <div class="case-window detail-window" id="win-w4">
   <div class="win-titlebar">
     <div class="win-dots">
@@ -704,28 +542,6 @@ html.vt-entry body { animation: none; opacity: 1; }
   <div class="win-scan"></div>
   <div class="win-body">
     <iframe class="case-frame" src="events/resume-editor.html?embed=1" title="个人简历修改网站详情"></iframe>
-  </div>
-</div>
-
-<div class="case-window" id="win-w5">
-  <div class="win-titlebar">
-    <div class="win-dots">
-      <div class="win-dot win-dot-close" data-close="win-w5"></div>
-      <div class="win-dot win-dot-min"></div>
-      <div class="win-dot win-dot-expand"></div>
-    </div>
-    <div class="win-title">#2026-003 · 可验证匿名评价协议</div>
-    <a class="win-newtab" href="#" target="_blank">新标签页 ↗</a>
-  </div>
-  <div class="win-scan"></div>
-  <div class="win-body">
-    <div class="win-row"><span class="win-label">编号</span><span class="win-val">#2026-003</span></div>
-    <div class="win-row"><span class="win-label">名称</span><span class="win-val">可验证匿名评价协议</span></div>
-    <div class="win-row"><span class="win-label">等级</span><span class="win-val">⚡ 高度异常</span></div>
-    <div class="win-row"><span class="win-label">技术栈</span><span class="win-val">Solidity · SBT · Web3</span></div>
-    <div class="win-row"><span class="win-label">结果</span><span class="win-val">黑客松赛道二等奖</span></div>
-    <div class="win-row"><span class="win-label">状态</span><span class="win-val">已归档</span></div>
-    <div class="win-summary">两周从零交付 Web3 产品。现学 Solidity 写智能合约，SBT 身份锚定 + 可验证匿名 + 评价上链不可篡改。路演当天摔了电脑和 iPad，DDAO 前一小时代码抢救成功。结果超出预期。</div>
   </div>
 </div>
 
@@ -786,7 +602,7 @@ html.vt-entry body { animation: none; opacity: 1; }
 <!-- ══ IP 形象 ══ -->
 <img id="ip-works" src="assets/serena-fullbody.png" alt="Serena" draggable="false">
 
-<footer class="icp-footer">
+<footer class="icp-footer icp-footer--fixed">
   <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">赣ICP备2026015468号-1</a>
 </footer>
 
@@ -850,12 +666,6 @@ html.vt-entry body { animation: none; opacity: 1; }
       });
     }
   }
-
-  document.querySelectorAll('.case-card').forEach(function (card) {
-    card.addEventListener('click', function () {
-      openCaseWindow(card.dataset.id);
-    });
-  });
 
   /* ── 关闭按钮 ── */
   document.querySelectorAll('.win-dot-close').forEach(function (dot) {
