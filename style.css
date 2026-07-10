@@ -408,11 +408,12 @@ a { color: inherit; }
   pointer-events: none;
 }
 
-/* ═══════════ 信号追踪 ═══════════ */
+/* ═══════════ 信号追踪（品牌蓝 #2B7FD8，与存在体概况一致）═══════════ */
 .signals-bg {
+  --accent: #2B7FD8;
   background-image:
-    linear-gradient(rgba(63, 81, 181, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(63, 81, 181, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(43, 127, 216, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 127, 216, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 .signals-bg .content > .file-tag {
@@ -448,16 +449,16 @@ a { color: inherit; }
 .ticket-v {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(63, 81, 181, 0.12);
+  border: 1px solid rgba(43, 127, 216, 0.12);
   border-radius: 16px;
   padding: 34px 28px;
   background: var(--bg);
-  box-shadow: 0 1px 4px rgba(63, 81, 181, 0.045);
+  box-shadow: 0 1px 4px rgba(43, 127, 216, 0.045);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .ticket-v:hover {
-  border-color: rgba(63, 81, 181, 0.42);
-  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.12);
+  border-color: rgba(43, 127, 216, 0.42);
+  box-shadow: 0 8px 24px rgba(43, 127, 216, 0.12);
   transform: translateY(-2px);
 }
 .ticket-v-head {
@@ -509,7 +510,7 @@ a { color: inherit; }
   font-family: var(--font-body);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
-  color: rgba(63, 81, 181, 0.72);
+  color: rgba(43, 127, 216, 0.72);
 }
 .signal-library-head h1 {
   margin: 0;
@@ -532,18 +533,18 @@ a { color: inherit; }
   gap: 24px;
 }
 .signal-sample-card {
-  border: 1px solid rgba(63, 81, 181, 0.12);
+  border: 1px solid rgba(43, 127, 216, 0.12);
   border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(255, 254, 250, 0.98), rgba(250, 248, 242, 0.94)),
     var(--bg);
   overflow: visible;
-  box-shadow: 0 10px 30px rgba(63, 81, 181, 0.07);
+  box-shadow: 0 10px 30px rgba(43, 127, 216, 0.07);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .signal-sample-card:hover {
-  border-color: rgba(63, 81, 181, 0.32);
-  box-shadow: 0 14px 36px rgba(63, 81, 181, 0.12);
+  border-color: rgba(43, 127, 216, 0.32);
+  box-shadow: 0 14px 36px rgba(43, 127, 216, 0.12);
   transform: translateY(-2px);
 }
 .signal-sample-media {
@@ -555,8 +556,8 @@ a { color: inherit; }
   border: 0;
   border-radius: 4px;
   background:
-    linear-gradient(rgba(63, 81, 181, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(63, 81, 181, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(43, 127, 216, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 127, 216, 0.035) 1px, transparent 1px),
     #fffefa;
   background-size: 18px 18px;
   box-shadow: inset 0 0 0 10px rgba(255, 254, 250, 0.94);
@@ -566,7 +567,7 @@ a { color: inherit; }
   content: '';
   position: absolute;
   inset: 7px;
-  border: 1.5px solid rgba(63, 81, 181, 0.34);
+  border: 1.5px solid rgba(43, 127, 216, 0.34);
   border-radius: 5px 3px 6px 4px;
   pointer-events: none;
   z-index: 2;
@@ -576,7 +577,7 @@ a { color: inherit; }
 }
 .signal-sample-media::after {
   inset: 11px 9px 9px 12px;
-  border-color: rgba(63, 81, 181, 0.18);
+  border-color: rgba(43, 127, 216, 0.18);
   border-style: dashed;
   border-radius: 3px 6px 4px 5px;
   transform: rotate(0.32deg);
@@ -601,7 +602,7 @@ a { color: inherit; }
   top: 50%;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(63, 81, 181, 0.18);
+  border: 1px solid rgba(43, 127, 216, 0.18);
   border-radius: 50%;
   background: rgba(255, 254, 250, 0.88);
   color: var(--accent);
@@ -614,8 +615,8 @@ a { color: inherit; }
 .signal-nav-prev { left: 12px; transform: translateY(-50%); }
 .signal-nav-next { right: 12px; transform: translateY(-50%); }
 .signal-nav:hover {
-  border-color: rgba(63, 81, 181, 0.45);
-  background: rgba(63, 81, 181, 0.08);
+  border-color: rgba(43, 127, 216, 0.45);
+  background: rgba(43, 127, 216, 0.08);
 }
 .signal-nav-prev:hover { transform: translateY(-50%) translateX(-1px); }
 .signal-nav-next:hover { transform: translateY(-50%) translateX(1px); }
@@ -624,7 +625,7 @@ a { color: inherit; }
   grid-template-columns: 1fr auto;
   gap: 8px 14px;
   padding: 16px 18px 18px;
-  border-top: 1px solid rgba(63, 81, 181, 0.09);
+  border-top: 1px solid rgba(43, 127, 216, 0.09);
 }
 .signal-sample-mark {
   font-family: var(--font-title);
@@ -635,7 +636,7 @@ a { color: inherit; }
   font-family: var(--font-body);
   font-size: 0.76rem;
   letter-spacing: 0.08em;
-  color: rgba(63, 81, 181, 0.55);
+  color: rgba(43, 127, 216, 0.55);
 }
 .signal-sample-meta p {
   grid-column: 1 / -1;
@@ -647,7 +648,7 @@ a { color: inherit; }
 .ticket-v-tear {
   position: relative;
   height: 0;
-  border-top: 1.5px dashed rgba(63, 81, 181, 0.24);
+  border-top: 1.5px dashed rgba(43, 127, 216, 0.24);
   margin: 26px 0 18px;
 }
 .ticket-v-tear::before,
@@ -658,7 +659,7 @@ a { color: inherit; }
   width: 14px;
   height: 14px;
   background: var(--bg);
-  border: 1px solid rgba(63, 81, 181, 0.18);
+  border: 1px solid rgba(43, 127, 216, 0.18);
   border-radius: 50%;
 }
 .ticket-v-tear::before { left: 0; transform: translate(-50%, -50%); }
@@ -672,7 +673,7 @@ a { color: inherit; }
 .ticket-barcode {
   background: repeating-linear-gradient(
     90deg,
-    rgba(63, 81, 181, 0.72) 0 1.5px,
+    rgba(43, 127, 216, 0.72) 0 1.5px,
     transparent 1.5px 4px
   );
   opacity: 0.34;
@@ -681,7 +682,7 @@ a { color: inherit; }
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border: 1.5px dashed rgba(63, 81, 181, 0.3);
+  border: 1.5px dashed rgba(43, 127, 216, 0.3);
   border-radius: 50%;
   display: flex;
   align-items: center;
