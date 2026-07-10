@@ -1,1131 +1,745 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Signal Hub · Serena</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    /* =====================
-       v10: 60%橙 + 30%红 + 10%蓝
-       浅橙米 #FFF3EE 主底 + 白色交替
-    ===================== */
-    :root {
-      --orange: #F07040;
-      --red: #CC2936;
-      --blue: #2B7FD8;
-      --orange-soft: rgba(240,112,64,0.10);
-      --red-soft: rgba(204,41,54,0.08);
-      --blue-deep: #1a5fa8;
-      --cream: #F9F8F6;
-      --cream-dark: #FFFFFF; /* keep */
-      --cream-mid: #FFE8DC;
-      --ink: #1A1A2E;
-      --ink-light: #44445A;
-      --ink-faint: #8A8A9A;
-      --dark-panel: #1A1A2E;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Signal Hub · Serena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;500;700;900&family=Schoolbell&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'ChillHuoFangSong';
+    src: url('../assets/ChillHuoFangSong_Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
-      color: var(--ink);
-      background: var(--cream);
-    }
-    ::selection { background: rgba(204,41,54,0.15); color: var(--ink); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+  :root {
+    --primary: #F07040;
+    --accent: #2B7FD8;
+    --decor: #CC2936;
+    --cream: #FFFDF9;
+    --cream-dark: #F9F8F6;
+    --ink: #1A1A2E;
+    --ink-light: #4A4A5A;
+    --ink-faint: #8A8A9A;
+    --line: rgba(26, 26, 46, .08);
+  }
 
-    /* =====================
-       导航
-    ===================== */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 1rem 2rem;
-      background: rgba(249,248,246,.93);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(26,26,46,.06);
-      display: flex; align-items: center; justify-content: space-between;
-      transition: box-shadow .3s;
-    }
-    nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,.06); }
-    .nav-logo {
-      font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700;
-      color: var(--ink); text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .nav-logo-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: var(--red);
-    }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a {
-      text-decoration: none; color: var(--ink-light); font-size: 0.85rem;
-      position: relative; transition: color .2s;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
-      height: 2px; background: var(--red);
-      transform: scaleX(0); transform-origin: left; transition: transform .25s ease-out;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-links a:hover::after { transform: scaleX(1); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* =====================
-       HERO — Sparkles 标题 + 副标题 + 精简数字
-    ===================== */
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(240,112,64,.18); color: var(--ink); }
+
+  img { display: block; max-width: 100%; }
+
+  .page {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 72% 42%, rgba(43,127,216,.055), transparent 28%),
+      var(--cream);
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    height: 58px;
+    padding: 0 clamp(26px, 4vw, 52px);
+    background: rgba(255,253,249,.88);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    color: var(--primary);
+    font-family: 'Schoolbell', cursive;
+    font-size: 1.32rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 3vw, 34px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tabs a {
+    position: relative;
+    color: var(--ink-light);
+    font-size: .84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .2s ease;
+  }
+
+  .tabs a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .22s ease;
+  }
+
+  .tabs a:hover { color: var(--primary); }
+  .tabs a:hover::after { transform: scaleX(1); }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .72fr);
+    align-items: center;
+    gap: clamp(52px, 7vw, 108px);
+    width: min(1120px, calc(100% - 64px));
+    min-height: calc(100svh - 58px);
+    margin: 0 auto;
+    padding: clamp(50px, 7vh, 84px) 0 clamp(110px, 14vh, 150px);
+  }
+
+  .eyebrow {
+    margin-bottom: clamp(24px, 4vw, 36px);
+    color: var(--primary);
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .kinetic-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: .22em;
+    row-gap: .05em;
+    margin-bottom: clamp(24px, 4vw, 38px);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(3rem, 7.8vw, 6rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .kinetic-title .word { display: inline-flex; white-space: nowrap; }
+  .kinetic-title .word:first-child { flex-basis: 100%; }
+  .kinetic-title .word-signal { color: var(--decor); }
+
+  .kinetic-title .char {
+    display: inline-block;
+    font-weight: 700;
+    transition: font-weight .4s, color .4s, padding .4s;
+    cursor: default;
+  }
+
+  .kinetic-title .char:hover,
+  .kinetic-title .char.active {
+    color: var(--primary);
+    font-weight: 900;
+    padding-inline: .06em;
+  }
+
+  .kinetic-title .word-signal .char:hover,
+  .kinetic-title .word-signal .char.active { color: var(--decor); }
+
+  .subtitle {
+    max-width: 610px;
+    color: var(--ink);
+    font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.9;
+  }
+
+  .visual { position: relative; justify-self: end; width: min(320px, 100%); }
+
+  .shot {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 30px 80px rgba(26,26,46,.1);
+  }
+
+  .shot img {
+    width: 100%;
+    aspect-ratio: 1076 / 1556;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .scene {
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - 58px);
+    scroll-margin-top: 58px;
+    background: var(--cream-dark);
+    border-top: 1px solid rgba(26,26,46,.05);
+    padding: clamp(78px, 11vw, 132px) 0;
+  }
+
+  .scene--plain {
+    background: transparent;
+    border-top: none;
+    min-height: auto;
+  }
+
+  .scene-inner { width: min(1120px, calc(100% - 64px)); margin: 0 auto; }
+
+  .section-header { margin-bottom: clamp(40px, 6vw, 66px); }
+
+  .section-number {
+    display: block;
+    margin-bottom: .2rem;
+    color: var(--primary);
+    font-family: 'ChillHuoFangSong', 'Noto Serif SC', serif;
+    font-size: 1.8rem;
+    font-style: italic;
+    opacity: .3;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .num-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .num-card {
+    position: relative;
+    min-height: 210px;
+    padding: 30px 24px 28px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+
+  .num-card .big {
+    position: absolute;
+    top: -10px;
+    right: 8px;
+    font-family: 'ChillHuoFangSong', 'Noto Serif SC', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .num-card h3 {
+    position: relative;
+    margin-bottom: 10px;
+    color: var(--ink);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .num-card p {
+    position: relative;
+    color: var(--ink-light);
+    font-size: .84rem;
+    line-height: 1.75;
+  }
+
+  /* === Quote band === */
+  .quote-band {
+    position: relative;
+    overflow: hidden;
+    background: var(--primary);
+    color: #fff;
+    padding: clamp(80px, 12vh, 144px) 0;
+  }
+
+  .quote-band::before {
+    content: '\201C';
+    position: absolute;
+    top: -76px;
+    left: clamp(8px, 6vw, 64px);
+    font-family: 'ChillHuoFangSong', 'Noto Serif SC', serif;
+    font-size: clamp(11rem, 24vw, 20rem);
+    line-height: 1;
+    opacity: .14;
+    pointer-events: none;
+  }
+
+  .quote-inner {
+    position: relative;
+    max-width: 820px;
+    margin: 0 auto;
+    width: min(100%, calc(100% - 48px));
+    text-align: center;
+  }
+
+  .quote-inner p {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: clamp(1.3rem, 3vw, 2.05rem);
+    line-height: 1.85;
+  }
+
+  .quote-inner .hl {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-color: rgba(255,255,255,.55);
+  }
+
+  .quote-meta {
+    display: block;
+    margin-top: 22px;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.72);
+  }
+
+  /* === 04 迭代 === */
+  .evolve-layout {
+    display: grid;
+    grid-template-columns: minmax(200px, .3fr) 1fr;
+    gap: clamp(36px, 6vw, 78px);
+    align-items: start;
+  }
+
+  .evolve-aside { position: sticky; top: 96px; }
+
+  .evolve-aside .ghost {
+    display: block;
+    font-family: 'ChillHuoFangSong', 'Noto Serif SC', serif;
+    font-size: clamp(4rem, 8vw, 6.4rem);
+    font-weight: 900;
+    color: var(--decor);
+    opacity: .14;
+    line-height: .8;
+    margin-bottom: 10px;
+  }
+
+  .evolve-aside h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .evolve-aside p { color: var(--ink-light); font-size: .88rem; line-height: 1.9; }
+
+  .icon-list { display: grid; gap: 16px; }
+
+  .icon-card {
+    display: grid;
+    grid-template-columns: 94px 1fr;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 10px rgba(0,0,0,.04);
+  }
+
+  .icon-card .ia {
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    background: rgba(240,112,64,.07);
+  }
+
+  .icon-card:nth-child(2) .ia { background: rgba(43,127,216,.07); }
+  .icon-card:nth-child(3) .ia { background: rgba(204,41,54,.06); }
+  .icon-card:nth-child(4) .ia { background: rgba(43,127,216,.07); }
+
+  .icon-card .ic { padding: 20px 22px; }
+
+  .icon-card h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 7px;
+  }
+
+  .icon-card .why {
+    display: inline-block;
+    margin-bottom: 7px;
+    font-family: 'Schoolbell', cursive;
+    color: var(--primary);
+    font-size: 1rem;
+    transform: rotate(-1deg);
+  }
+
+  .icon-card p { color: var(--ink-light); font-size: .84rem; line-height: 1.8; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+  .chip {
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: rgba(43,127,216,.08);
+    color: var(--accent);
+    font-family: 'Fira Code', monospace;
+    font-size: .64rem;
+  }
+
+  .chip.primary { background: rgba(240,112,64,.09); color: var(--primary); }
+
+  /* === 05 · chair-typo #10E === */
+  .chair-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 44px;
+  }
+
+  .chair-typo .dv { width: 30px; height: 3px; margin-bottom: 18px; }
+
+  .chair-typo h3 {
+    font-family: 'ChillHuoFangSong', 'Noto Serif SC', serif;
+    font-size: 1.16rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .chair-typo p { color: var(--ink-light); font-size: .85rem; line-height: 1.9; }
+
+  .chair-typo .mt {
+    display: block;
+    margin-top: 14px;
+    font-family: 'Fira Code', monospace;
+    font-size: .62rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .icp-footer {
+    padding: 0 clamp(20px,5vw,48px) 40px;
+    text-align: center;
+    font-size: .75rem;
+    color: var(--ink-faint);
+  }
+
+  .icp-footer a { color: inherit; text-decoration: none; }
+  .icp-footer a:hover { color: var(--primary); text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+
+  @media (max-width: 900px) {
     .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 120px 2rem 80px;
-      text-align: center;
-      position: relative; overflow: hidden;
+      grid-template-columns: 1fr;
+      width: min(680px, calc(100% - 42px));
+      min-height: auto;
     }
-    .hero::before {
-      content: 'SIGNAL';
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'Fraunces', serif;
-      font-size: clamp(8rem, 22vw, 20rem);
-      font-weight: 900; color: var(--orange); opacity: 0.05;
-      letter-spacing: 0.05em; pointer-events: none;
-      white-space: nowrap; user-select: none;
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 16px;
-      background: rgba(204,41,54,0.05);
-      border: 1px solid rgba(204,41,54,0.15);
-      border-radius: 20px;
-      font-family: 'Fira Code', monospace; font-size: 0.72rem;
-      color: var(--red); letter-spacing: 0.08em; text-transform: uppercase;
-      margin-bottom: 2rem;
-    }
-    .hero-badge::before {
-      content: ''; width: 6px; height: 6px;
-      border-radius: 50%; background: var(--red);
-    }
+    .scene-inner { width: min(680px, calc(100% - 42px)); }
+    .num-grid { grid-template-columns: 1fr; }
+    .num-grid--4 { grid-template-columns: repeat(2, 1fr); }
+    .visual { justify-self: start; width: min(340px, 82vw); }
+    .evolve-layout { grid-template-columns: 1fr; }
+    .evolve-aside { position: static; margin-bottom: 8px; }
+    .chair-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  }
 
-    /* Kinetic Text 组件 #48 — 逗字符悬浮字重 */
-    .kinetic-text {
-      display: flex; flex-wrap: wrap; gap: 0;
-      font-weight: 300;
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(2.4rem, 6.5vw, 4.8rem);
-      color: var(--ink); line-height: 1.2;
-      margin-bottom: 1.2rem; justify-content: center;
-    }
-    .kinetic-text span {
-      display: inline-block;
-      transition: font-weight 0.4s, -webkit-text-stroke-color 0.4s, padding 0.4s, color 0.4s;
-      -webkit-text-stroke-width: 0.02em;
-      -webkit-text-stroke-color: transparent;
-      cursor: default;
-    }
-    .kinetic-text span:hover {
-      font-weight: 900;
-      padding-inline: 0.06em;
-      -webkit-text-stroke-color: var(--orange);
-      color: var(--orange);
-    }
-    .kinetic-text span.hl {
-      color: var(--red); font-weight: 900;
-    }
-    .kinetic-text span.hl:hover {
-      color: var(--red);
-      -webkit-text-stroke-color: var(--red);
-    }
-    /* sparkle CSS removed — using Kinetic Text instead */
-
-    .hero-sub {
-      font-size: 1.05rem; color: var(--ink-light);
-      max-width: 520px; margin-bottom: 3rem; line-height: 1.9;
-    }
-    .hero-sub em {
-      font-style: normal;
-      background: linear-gradient(180deg, transparent 55%, rgba(204,41,54,0.12) 55%);
-      padding: 0 4px;
-    }
-
-    /* 两个数字 */
-    .hero-stats {
-      display: flex; align-items: center; gap: 32px;
-      flex-wrap: wrap; justify-content: center;
-    }
-    .hero-stat {
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .hero-stat-num {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      font-weight: 900; color: var(--orange); line-height: 1;
-    }
-    .hero-stat-label {
-      font-size: 0.75rem; color: var(--ink-faint);
-      margin-top: 4px; letter-spacing: 0.05em;
-    }
-    .hero-divider {
-      width: 1px; height: 44px;
-      background: rgba(26,26,46,.1);
-    }
-    /* 技术栈小胶囊 */
-    .tech-stack {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      justify-content: center; margin-top: 2rem;
-    }
-    .tech-chip {
-      padding: 4px 14px; border-radius: 20px;
-      font-family: 'Fira Code', monospace; font-size: 0.7rem;
-      background: rgba(204,41,54,0.05);
-      border: 1px solid rgba(204,41,54,0.18);
-      color: var(--red);
-    }
-
-    /* =====================
-       Section 通用
-    ===================== */
-    .section { padding: clamp(80px, 12vh, 140px) 0; }
-    .section--alt { background: var(--cream-dark); }
-    .section-eyebrow {
-      font-family: 'Fraunces', serif; font-style: italic;
-      font-size: clamp(1.1rem, 2vw, 1.6rem);
-      color: var(--blue); opacity: 0.5;
-      display: block; margin-bottom: 0.3rem; line-height: 1;
-    }
-    .section-title {
-      font-family: 'Noto Serif SC', serif; font-weight: 900;
-      font-size: clamp(1.5rem, 3.5vw, 2.3rem);
-      margin-bottom: clamp(40px, 6vw, 72px);
-      line-height: 1.3;
-    }
-
-    /* =====================
-       SECTION 01 — 四张痛点卡片
-    ===================== */
-    .pain-intro {
-      max-width: 620px;
-      font-size: 1.05rem; color: var(--ink-light); line-height: 1.9;
-      margin-bottom: clamp(40px, 6vw, 64px);
-    }
-    .pain-intro .hl-yellow {
-      background: linear-gradient(180deg, transparent 60%, rgba(204,41,54,0.12) 60%);
-      padding: 0 3px;
-    }
-
-    .pain-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: clamp(14px, 2vw, 24px);
-    }
-    .pain-card {
-      background: white; border-radius: 18px;
-      padding: clamp(24px, 3vw, 32px) clamp(20px, 2.5vw, 28px);
-      position: relative; overflow: hidden;
-      box-shadow: 0 3px 16px rgba(0,0,0,.04);
-      border-top: 3px solid;
-    }
-    .pain-card:nth-child(1) { border-color: var(--blue); }
-    .pain-card:nth-child(2) { border-color: var(--orange); }
-    .pain-card:nth-child(3) { border-color: var(--red); }
-    .pain-card:nth-child(4) { border-color: var(--red); }
-
-    .pain-card-icon {
-      font-size: 1.8rem; margin-bottom: 14px; display: block;
-    }
-    .pain-card h3 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 0.95rem; font-weight: 900;
-      margin-bottom: 8px; line-height: 1.4;
-    }
-    .pain-card p {
-      font-size: 0.82rem; color: var(--ink-light); line-height: 1.75;
-    }
-    /* 大背景装饰字 */
-    .pain-card::after {
-      content: attr(data-num);
-      position: absolute; bottom: -12px; right: 8px;
-      font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 900;
-      line-height: 1; pointer-events: none; opacity: 0.05; color: var(--ink);
-    }
-
-    /* =====================
-       SECTION 02 — 搭建叙事（暖米深底 + 翻转卡片）
-    ===================== */
-    .build-section {
-      background: var(--cream-dark);
-      padding: clamp(80px, 12vh, 140px) 0;
-    }
-    .build-section .section-eyebrow { color: var(--blue); opacity: 0.45; }
-    .build-section .section-title { color: var(--ink); }
-
-    .build-timeline {
-      display: flex; flex-direction: column; gap: 0;
-      position: relative;
-    }
-    .build-timeline::before {
-      content: '';
-      position: absolute; left: 20px; top: 28px; bottom: 28px;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--blue), var(--orange), var(--red));
-      opacity: 0.5;
-    }
-    .build-step {
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 24px;
-      padding: 28px 0;
-      border-bottom: 1px solid rgba(26,26,46,0.07);
-      align-items: start;
-    }
-    .build-step:last-child { border-bottom: none; }
-
-    .build-dot {
-      width: 42px; height: 42px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Fraunces', serif; font-size: 0.9rem; font-weight: 900;
-      position: relative; z-index: 1; flex-shrink: 0;
-      margin-top: 2px;
-      box-shadow: 0 0 0 4px var(--cream-dark);
-    }
-    .build-dot--blue { background: var(--blue); color: #fff; }
-    .build-dot--yellow { background: var(--orange); color: #fff; }
-    .build-dot--red { background: var(--red); color: #fff; }
-    .build-dot--green { background: var(--orange); color: #fff; }
-
-    .build-content { color: var(--ink); }
-    .build-content h4 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 1rem; font-weight: 700;
-      margin-bottom: 6px; line-height: 1.4;
-    }
-    .build-content p {
-      font-size: 0.85rem; color: var(--ink-light); line-height: 1.8;
-    }
-    .build-content .commit-tag {
-      display: inline-block; margin-top: 8px;
-      font-family: 'Fira Code', monospace; font-size: 0.65rem;
-      color: var(--orange);
-      padding: 2px 8px; border: 1px solid rgba(240,112,64,0.25);
-      border-radius: 4px; background: rgba(240,112,64,0.06);
-    }
-
-    /* 翻转卡片行 */
-    .flip-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(14px, 2vw, 24px);
-      margin-top: 3rem;
-    }
-    .flip-scene {
-      perspective: 1000px;
-      height: 180px;
-    }
-    .flip-card {
-      width: 100%; height: 100%; position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s ease; cursor: pointer;
-    }
-    .flip-card:hover { transform: rotateY(180deg); }
-    .flip-front, .flip-back {
-      position: absolute; inset: 0; backface-visibility: hidden;
-      border-radius: 16px;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      padding: 24px;
-    }
-    .flip-front {
-      background: var(--cream);
-      border: 1px solid var(--cream-mid);
-      box-shadow: 0 3px 16px rgba(26,26,46,.05);
-    }
-    .flip-back {
-      transform: rotateY(180deg);
-      background: var(--red); color: #fff;
-      text-align: center;
-    }
-    .flip-front-num {
-      font-family: 'Fraunces', serif; font-size: clamp(2.4rem, 5vw, 3.2rem);
-      font-weight: 900; color: var(--orange); line-height: 1;
-    }
-    .flip-front-label {
-      font-size: 0.72rem; color: var(--ink-faint);
-      margin-top: 6px; letter-spacing: 0.06em;
-    }
-    .flip-hint {
-      font-size: 0.62rem; color: var(--ink-faint);
-      margin-top: 10px; font-family: 'Fira Code', monospace;
-    }
-    .flip-back h4 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 0.88rem; font-weight: 700; margin-bottom: 8px;
-    }
-    .flip-back p {
-      font-size: 0.78rem; color: rgba(255,255,255,.85); line-height: 1.7;
-    }
-
-    /* =====================
-       SECTION 03 — 三大卡点（浓缩）
-    ===================== */
-    .diff-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: clamp(16px, 2.5vw, 28px);
-    }
-    .diff-card {
-      background: white; border-radius: 20px;
-      padding: 32px 26px 26px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.05);
-      position: relative; overflow: hidden;
-    }
-    .diff-card-bg {
-      position: absolute; top: -20px; right: -8px;
-      font-family: 'Fraunces', serif; font-size: 7rem; font-weight: 900;
-      line-height: 1; pointer-events: none; opacity: 0.06;
-    }
-    .diff-card:nth-child(1) .diff-card-bg { color: var(--blue); }
-    .diff-card:nth-child(2) .diff-card-bg { color: var(--orange); }
-    .diff-card:nth-child(3) .diff-card-bg { color: var(--red); }
-
-    .diff-tag {
-      font-family: 'Fira Code', monospace; font-size: 0.68rem;
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-bottom: 14px; display: inline-block;
-      padding: 3px 10px; border-radius: 4px;
-    }
-    .diff-card:nth-child(1) .diff-tag { background: rgba(43,127,216,.09); color: var(--blue); }
-    .diff-card:nth-child(2) .diff-tag { background: rgba(240,112,64,.10); color: var(--orange); }
-    .diff-card:nth-child(3) .diff-tag { background: rgba(204,41,54,.08); color: var(--red); }
-
-    .diff-card h3 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 1.05rem; font-weight: 900;
-      margin-bottom: 10px; line-height: 1.4; position: relative;
-    }
-    .diff-card p {
-      font-size: 0.85rem; color: var(--ink-light);
-      line-height: 1.8; position: relative;
-    }
-    .diff-card .code-snippet {
-      margin-top: 14px; background: #1e1e2e; border-radius: 8px;
-      overflow: hidden; position: relative;
-    }
-    .code-bar {
-      background: #313244; padding: 6px 12px;
-      display: flex; gap: 5px;
-    }
-    .code-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .code-dot:nth-child(1) { background: #ff5f56; }
-    .code-dot:nth-child(2) { background: #ffbd2e; }
-    .code-dot:nth-child(3) { background: #27c93f; }
-    .code-body {
-      padding: 14px 16px;
-      font-family: 'Fira Code', monospace; font-size: 0.7rem;
-      line-height: 1.9; color: #a9b1d6;
-    }
-    .code-body .kw { color: #bb9af7; }
-    .code-body .str { color: #9ece6a; }
-    .code-body .cm { color: #565f89; }
-    .code-body .num { color: #ff9e64; }
-
-    /* =====================
-       SECTION 04 — 深色 Pull Quote（全页唯一深色）
-    ===================== */
-    .quote-section {
-      background: var(--orange); color: #fff;
-      padding: clamp(80px, 12vh, 140px) 0;
-      position: relative; overflow: hidden;
-    }
-    .quote-section::before {
-      content: '"';
-      position: absolute; top: -60px; left: 0;
-      font-family: 'Fraunces', serif;
-      font-size: clamp(14rem, 30vw, 26rem);
-      font-weight: 900; color: rgba(255,255,255,.12);
-      line-height: 1; pointer-events: none;
-    }
-    .quote-inner {
-      text-align: center; position: relative; max-width: 780px; margin: 0 auto;
-    }
-    .quote-text {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(1.2rem, 2.8vw, 1.85rem);
-      font-weight: 700; line-height: 1.85;
-      margin-bottom: 1.5rem;
-    }
-    .quote-text .hl {
-      color: #fff;
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      text-decoration-color: rgba(255,255,255,0.5);
-      position: relative;
-    }
-    .quote-attr {
-      font-family: 'Fira Code', monospace; font-size: 0.72rem;
-      color: rgba(255,255,255,.6); letter-spacing: 0.06em;
-    }
-
-    /* =====================
-       SECTION 05 — 产品演进（Sticky 侧栏）
-    ===================== */
-    .evolve-layout {
-      display: grid; grid-template-columns: 220px 1fr;
-      gap: clamp(40px, 6vw, 80px); align-items: start;
-    }
-    .evolve-side {
-      position: sticky; top: 100px;
-    }
-    .evolve-num {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(3rem, 6vw, 5rem); font-weight: 900;
-      color: var(--red); opacity: 0.12; line-height: 1; display: block;
-    }
-    .evolve-side h2 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 900;
-      line-height: 1.4; margin-top: -0.3rem; margin-bottom: 1rem;
-    }
-    .evolve-side p { font-size: 0.85rem; color: var(--ink-light); line-height: 1.8; }
-
-    .evolve-list { display: flex; flex-direction: column; gap: 20px; }
-    .evolve-item {
-      background: white; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,.04);
-      display: grid; grid-template-columns: 80px 1fr;
-    }
-    .evolve-icon {
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; padding: 24px 12px;
-    }
-    .evolve-item:nth-child(1) .evolve-icon { background: rgba(43,127,216,.08); }
-    .evolve-item:nth-child(2) .evolve-icon { background: rgba(240,112,64,.09); }
-    .evolve-item:nth-child(3) .evolve-icon { background: rgba(204,41,54,.07); }
-    .evolve-item:nth-child(4) .evolve-icon { background: rgba(43,127,216,.06); }
-    .evolve-content { padding: 20px 22px 20px 18px; }
-    .evolve-content h4 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;
-    }
-    .evolve-content .why {
-      font-family: 'Caveat', cursive; font-size: 0.92rem;
-      color: var(--red); opacity: 0.7; margin-bottom: 6px; display: block;
-    }
-    .evolve-content p { font-size: 0.82rem; color: var(--ink-light); line-height: 1.7; }
-    .evolve-chips {
-      display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px;
-    }
-    .evolve-chip {
-      padding: 2px 9px; border-radius: 4px;
-      font-size: 0.67rem; font-family: 'Fira Code', monospace;
-      background: rgba(43,127,216,0.08); color: var(--blue);
-    }
-    .evolve-chip--y {
-      background: rgba(240,112,64,0.10); color: var(--orange);
-    }
-
-    /* =====================
-       SECTION 06 — 能力横向Step
-    ===================== */
-    .skill-steps {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 0; position: relative; margin-top: 8px;
-    }
-    .skill-steps::before {
-      content: ''; position: absolute; top: 23px;
-      left: 28px; right: 28px; height: 2px;
-      background: linear-gradient(90deg, var(--orange), var(--blue), var(--red), var(--orange));
-      opacity: 0.35; z-index: 0;
-    }
-    .skill-step { text-align: center; padding: 0 1rem; position: relative; }
-    .skill-dot {
-      width: 46px; height: 46px; border-radius: 50%;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 900;
-      margin-bottom: 14px; position: relative; z-index: 1;
-      box-shadow: 0 0 0 4px var(--cream);
-    }
-    .skill-step:nth-child(1) .skill-dot { background: var(--blue); color: #fff; }
-    .skill-step:nth-child(2) .skill-dot { background: var(--orange); color: #fff; }
-    .skill-step:nth-child(3) .skill-dot { background: var(--red); color: #fff; }
-    .skill-step:nth-child(4) .skill-dot { background: var(--orange); color: #fff; }
-    .skill-step h4 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 0.9rem; font-weight: 700; margin-bottom: 7px; line-height: 1.4;
-    }
-    .skill-step p { font-size: 0.78rem; color: var(--ink-light); line-height: 1.7; }
-
-    /* =====================
-       SECTION 07 — 下一步（奶白底）
-    ===================== */
-    .next-section { background: var(--cream-dark); padding: clamp(80px, 12vh, 140px) 0; }
-    .next-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 40px; }
-    .next-card {
-      background: white; border-radius: 18px; padding: 32px 28px;
-      position: relative; overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,.04);
-    }
-    .next-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    }
-    .next-card--soon::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
-    .next-card--later::before { background: linear-gradient(90deg, var(--red), var(--red)); }
-    .next-card-label {
-      font-family: 'Fira Code', monospace; font-size: 0.68rem;
-      text-transform: uppercase; letter-spacing: 1.5px;
-      margin-bottom: 14px;
-      display: flex; align-items: center; gap: 7px;
-    }
-    .next-card--soon .next-card-label { color: var(--orange); }
-    .next-card--later .next-card-label { color: var(--red); }
-    .next-card-label::before {
-      content: ''; width: 5px; height: 5px; border-radius: 50%;
-    }
-    .next-card--soon .next-card-label::before { background: var(--orange); }
-    .next-card--later .next-card-label::before { background: var(--red); }
-    .next-card h3 {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 1.05rem; font-weight: 900; margin-bottom: 16px;
-    }
-    .next-items { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-    .next-items li {
-      font-size: 0.85rem; color: var(--ink-light);
-      padding-left: 18px; position: relative; line-height: 1.6;
-    }
-    .next-card--soon .next-items li::before {
-      content: '→'; position: absolute; left: 0;
-      color: var(--orange); font-size: 0.75rem;
-    }
-    .next-card--later .next-items li::before {
-      content: '○'; position: absolute; left: 0;
-      color: var(--red); font-size: 0.65rem;
-    }
-
-    /* 边界引用 */
-    .boundary-note {
-      padding: 28px 32px; background: var(--cream); border-radius: 14px;
-      border: 1px solid var(--cream-mid);
-      box-shadow: inset 0 0 0 3px rgba(204,41,54,0.08);
-      position: relative;
-    }
-    .boundary-note::before {
-      content: '"'; position: absolute; top: -14px; left: 16px;
-      font-family: 'Fraunces', serif; font-size: 4rem; line-height: 1;
-      color: var(--red); opacity: 0.35;
-    }
-    .boundary-note p {
-      font-family: 'Noto Serif SC', serif;
-      font-size: 0.95rem; font-weight: 700; line-height: 1.9;
-    }
-    .boundary-note .note-meta {
-      margin-top: 10px; font-family: 'Fira Code', monospace;
-      font-size: 0.68rem; color: var(--ink-faint);
-    }
-
-    /* =====================
-       FOOTER — 奶白底
-    ===================== */
-    footer {
-      background: var(--cream-dark);
-      border-top: 1px solid rgba(26,26,46,.08);
-      padding: 3rem 2rem; text-align: center;
-    }
-    .footer-brand {
-      font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700;
-      color: var(--ink); margin-bottom: .5rem;
-    }
-    .footer-sub {
-      font-family: 'Fira Code', monospace; font-size: 0.72rem;
-      color: var(--ink-faint); letter-spacing: 0.05em;
-    }
-    .footer-back {
-      display: inline-block; margin-top: 1.5rem;
-      font-family: 'Fira Code', monospace; font-size: 0.72rem;
-      color: var(--blue); text-decoration: none;
-      border-bottom: 1px solid rgba(69,100,181,.3);
-    }
-    .icp-link {
-      display: inline-block; margin-top: 1.1rem;
-      font-size: .75rem; color: var(--ink-faint); text-decoration: none;
-    }
-    .icp-link:hover { color: var(--red); text-decoration: underline; }
-
-    /* =====================
-       Scroll Reveal
-    ===================== */
-    .reveal {
-      opacity: 0; transform: translateY(28px);
-      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal.visible { opacity: 1; transform: none; }
-    .reveal-d1 { transition-delay: 0.1s; }
-    .reveal-d2 { transition-delay: 0.2s; }
-    .reveal-d3 { transition-delay: 0.3s; }
-    .reveal-d4 { transition-delay: 0.4s; }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
-    }
-
-    /* =====================
-       响应式
-    ===================== */
-    @media (max-width: 900px) {
-      nav { padding: .75rem 1.25rem; }
-      .nav-links { display: none; }
-      .hero { padding: 100px 1.5rem 60px; text-align: left; align-items: flex-start; }
-      .hero::before { display: none; }
-      .hero-stats { justify-content: flex-start; }
-      .tech-stack { justify-content: flex-start; }
-
-      .pain-grid { grid-template-columns: repeat(2, 1fr); }
-
-      .build-timeline::before { display: none; }
-
-      .flip-row { grid-template-columns: 1fr; }
-      .flip-scene { height: 160px; }
-
-      .diff-grid { grid-template-columns: 1fr; }
-
-      .evolve-layout { grid-template-columns: 1fr; }
-      .evolve-side { position: static; margin-bottom: 2rem; }
-
-      .skill-steps { grid-template-columns: repeat(2, 1fr); gap: 28px; }
-      .skill-steps::before { display: none; }
-
-      .next-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
-      body { font-size: 15px; }
-      .pain-grid { grid-template-columns: 1fr; }
-      .skill-steps { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+  @media (max-width: 620px) {
+    .nav {
+      height: auto;
+      align-items: flex-start;
+      flex-direction: column;
+      padding-top: 16px;
+      padding-bottom: 14px;
+    }
+    .tabs { width: 100%; padding-bottom: 2px; }
+    .hero { padding-top: 56px; }
+    .kinetic-title { font-size: clamp(3.35rem, 18vw, 5.1rem); }
+    .scene { padding: 70px 0; }
+    .num-card { min-height: auto; }
+    .num-grid--4 { grid-template-columns: 1fr; }
+    .icon-card { grid-template-columns: 72px 1fr; }
+    .icon-card .ia { font-size: 1.6rem; }
+    .chair-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+</style>
 </head>
 <body>
-
-  <!-- 导航 -->
-  <nav id="navbar">
-    <a class="nav-logo" href="#">
-      <span class="nav-logo-dot"></span>YouTube Signal Hub
-    </a>
-    <ul class="nav-links">
-      <li><a href="#pain">当时的困境</a></li>
-      <li><a href="#build">搭建过程</a></li>
-      <li><a href="#tech">技术卡点</a></li>
-      <li><a href="#evolve">产品演进</a></li>
-      <li><a href="#next">下一步</a></li>
-    </ul>
-  </nav>
-
-  <!-- ====== HERO ====== -->
-  <section class="hero" id="hero">
-    <h1 class="kinetic-text reveal reveal-d1" id="kineticHero"></h1>
-
-    <p class="hero-sub reveal reveal-d2">
-      你的爆款视频，<em>已送达</em>。<br>
-      定制频道监控规则，让信号主动找上门。
-    </p>
-  </section>
-
-  <!-- ====== SECTION 01 — 四张痛点卡片 ====== -->
-  <section class="section" id="pain">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-eyebrow">01</span>
-        <h2 class="section-title" style="margin-bottom:1.5rem;">手动刷的那段时间</h2>
+  <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="logo" href="#hero">YouTube Signal Hub</a>
+      <div class="tabs" role="list">
+        <a href="#scene" role="listitem">现场</a>
+        <a href="#build" role="listitem">搭建</a>
+        <a href="#evolve" role="listitem">迭代</a>
+        <a href="#skills" role="listitem">能力</a>
       </div>
-      <p class="pain-intro reveal reveal-d1">
-        为了找 YouTube 频道定位，我空下来就刷视频，<span class="hl-yellow">每天两三个小时</span>。
-        现有工具要么要付费，要么数据只在侧边栏被动显示，
-        最想捕捉的「低粉异常爆款」根本没有办法系统化发现。
-      </p>
-      <div class="pain-grid">
-        <div class="pain-card reveal reveal-d1" data-num="01">
-          <span class="pain-card-icon">🔍</span>
-          <h3>看不到增量</h3>
-          <p>插件只显示发布时间，无法直接看到播放量的实时增量，只能靠发布时间+现有播放量大概猜测。</p>
-        </div>
-        <div class="pain-card reveal reveal-d2" data-num="02">
-          <span class="pain-card-icon">💸</span>
-          <h3>付费门槛高</h3>
-          <p>vidIQ、ViewStats 数据展示在侧边栏，信息零散，且前期不愿投入成本去订阅。</p>
-        </div>
-        <div class="pain-card reveal reveal-d3" data-num="03">
-          <span class="pain-card-icon">⏰</span>
-          <h3>没有主动提醒</h3>
-          <p>所有工具都要我主动去看，没有一个能在爆款出现时第一时间通知我。</p>
-        </div>
-        <div class="pain-card reveal reveal-d4" data-num="04">
-          <span class="pain-card-icon">📡</span>
-          <h3>找不到低粉爆款</h3>
-          <p>最有参考价值的是 5k–10k 小频道的异常增长，但这类视频完全淹没在大频道内容里。</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </nav>
 
-  <!-- ====== SECTION 02 — 搭建叙事 + 翻转卡片 ====== -->
-  <section class="build-section" id="build">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-eyebrow">02</span>
-        <h2 class="section-title">11天，158次提交，一条链路跑通了</h2>
-      </div>
-
-      <div class="build-timeline reveal reveal-d1">
-        <div class="build-step">
-          <div class="build-dot build-dot--blue">1</div>
-          <div class="build-content">
-            <h4>先把数据拉回来</h4>
-            <p>接入 YouTube Data API，拉取频道和视频基础数据。这一步很快，MVP 雏形一天内成型。</p>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="build-dot build-dot--yellow">2</div>
-          <div class="build-content">
-            <h4>增量怎么算——绕了弯路</h4>
-            <p>
-              最开始以为增量应该从发布时间起算，实现后发现数值是固定的，根本没法判断"最近有没有爆"。
-              后来改成以当前时间为基点向前倒推 24h / 7d，才对了。
-            </p>
-            <span class="commit-tag">commit: 增量改为滚动倒推窗口</span>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="build-dot build-dot--blue">3</div>
-          <div class="build-content">
-            <h4>定时任务第一天没动静</h4>
-            <p>接入 QStash 后，定时任务第一天完全静默，没有任何报错。排查发现是 Upstash regional endpoint URL 配错了。</p>
-            <span class="commit-tag">00fe7aa · fix: QStash endpoint 改用正确的 regional URL</span>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="build-dot build-dot--red">4</div>
-          <div class="build-content">
-            <h4>规则引擎上线，第一条通知送达</h4>
-            <p>自定义触发条件跑通，企业微信收到第一条爆款预警推送。闭环成立了。</p>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="build-dot build-dot--green">5</div>
-          <div class="build-content">
-            <h4>Chrome 插件补上"发现入口"</h4>
-            <p>刷 YouTube 时看到感兴趣的频道，点一下插件就能加入监控列表，解决了手动复制频道链接的麻烦。</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 翻转卡片：三个关键数字 -->
-      <div class="flip-row">
-        <div class="flip-scene reveal reveal-d1">
-          <div class="flip-card">
-            <div class="flip-front">
-              <span class="flip-front-num">158</span>
-              <span class="flip-front-label">commits</span>
-              <span class="flip-hint">悬停查看详情 →</span>
-            </div>
-            <div class="flip-back">
-              <h4>峰值单日 36 个</h4>
-              <p>4月28日，增量计算逻辑反复迭代那天，单日提交 36 次。</p>
-            </div>
-          </div>
-        </div>
-        <div class="flip-scene reveal reveal-d2">
-          <div class="flip-card">
-            <div class="flip-front">
-              <span class="flip-front-num">11</span>
-              <span class="flip-front-label">天完成</span>
-              <span class="flip-hint">悬停查看详情 →</span>
-            </div>
-            <div class="flip-back">
-              <h4>4月21日 → 5月1日</h4>
-              <p>从 init commit 到闭环跑通，全链路：数据·调度·规则·通知·插件。</p>
-            </div>
-          </div>
-        </div>
-        <div class="flip-scene reveal reveal-d3">
-          <div class="flip-card">
-            <div class="flip-front">
-              <span class="flip-front-num">1×</span>
-              <span class="flip-front-label">API 配额</span>
-              <span class="flip-hint">悬停查看详情 →</span>
-            </div>
-            <div class="flip-back">
-              <h4>从 100 单位降到 1</h4>
-              <p>两处关键改动：channels?forHandle + playlistItems，各省 99 单位配额。</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====== SECTION 03 — 三大技术卡点 ====== -->
-  <section class="section" id="tech">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-eyebrow">03</span>
-        <h2 class="section-title">真正卡住的三个地方</h2>
-      </div>
-      <div class="diff-grid">
-        <div class="diff-card reveal reveal-d1">
-          <span class="diff-card-bg">01</span>
-          <span class="diff-tag">增量计算</span>
-          <h3>滚动窗口，不是累计</h3>
-          <p>
-            从发布时间起算的播放量是固定值，没法判断最近有没有爆发。
-            换成以 <span class="hl-box" style="border:2px solid var(--blue);border-radius:4px;padding:1px 6px;font-family:'Fira Code',monospace;font-size:.8em;color:var(--blue)">Date.now()</span> 倒推才对——
-            这是整个项目花时间最多的一步。
-          </p>
-          <div class="code-snippet">
-            <div class="code-bar">
-              <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
-            </div>
-            <div class="code-body">
-              <span class="cm">// ✅ 正确：滚动倒推</span><br>
-              cutoff = <span class="num">Date.now()</span> - <span class="num">24h</span><br>
-              delta = views_now - views_at(cutoff)
-            </div>
-          </div>
-        </div>
-        <div class="diff-card reveal reveal-d2">
-          <span class="diff-card-bg">02</span>
-          <span class="diff-tag">定时任务</span>
-          <h3>第一天没动静，原因在 endpoint</h3>
-          <p>
-            QStash 接入后首日静默，无报错。定位到是 Upstash regional URL 配置错误，
-            改掉之后定时同步才正常运行。
-          </p>
-          <p style="margin-top:10px;font-family:'Fira Code',monospace;font-size:.75rem;color:var(--ink-faint)">
-            → <span style="color:var(--blue)">00fe7aa</span>
+    <main>
+      <section class="hero" id="hero">
+        <div class="copy">
+          <p class="eyebrow">YOUTUBE RADAR × AI</p>
+          <h1 class="kinetic-title" aria-label="YouTube Signal Hub">
+            <span class="word">YouTube</span>
+            <span class="word word-signal">Signal</span>
+            <span class="word">Hub</span>
+          </h1>
+          <p class="subtitle">
+            你的爆款视频已送达。<br>
+            定制频道监控规则，让信号主动找上门。
           </p>
         </div>
-        <div class="diff-card reveal reveal-d3">
-          <span class="diff-card-bg">03</span>
-          <span class="diff-tag">API 配额</span>
-          <h3>两处改动，配额从 100 降到 1</h3>
-          <p>
-            YouTube API 按调用单位计费。频道搜索换
-            <span style="font-family:'Fira Code',monospace;font-size:.82em;color:var(--blue)">forHandle</span>，
-            视频列表换
-            <span style="font-family:'Fira Code',monospace;font-size:.82em;color:var(--blue)">playlistItems</span>，
-            各省 99 单位。
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ====== SECTION 04 — Pull Quote ====== -->
-  <section class="quote-section">
-    <div class="container">
-      <div class="quote-inner reveal">
-        <p class="quote-text">
-          第一次收到爆款通知时，我知道这个工具的<span class="hl">闭环成立了</span>——
-          <br>这次跑在生产环境里的，不是 demo。
-        </p>
-        <p class="quote-attr">规则触发 · 企业微信推送 · 20 个视频命中</p>
-      </div>
-    </div>
-  </section>
+        <figure class="visual" aria-label="爆款监测通知截图">
+          <div class="shot">
+            <img src="assets/youtube-signal-hub-hero.jpg" alt="YouTube Signal Hub 爆款监测通知截图">
+          </div>
+        </figure>
+      </section>
 
-  <!-- ====== SECTION 05 — 产品演进 ====== -->
-  <section class="section section--alt" id="evolve">
-    <div class="container">
-      <div class="evolve-layout">
-        <div class="evolve-side reveal">
-          <span class="evolve-num">05</span>
-          <h2>每个功能，背后都有一个具体的发现</h2>
-          <p>MVP 跑通之后，每加一个功能都是因为用着用着发现缺了什么。</p>
-        </div>
-        <div class="evolve-list">
-          <div class="evolve-item reveal reveal-d1">
-            <div class="evolve-icon">⚡</div>
-            <div class="evolve-content">
-              <h4>爆款规则引擎</h4>
-              <span class="why">↳ 通知了但不知道为什么触发</span>
-              <p>从单一阈值升级成自定义条件组合，任意/全部匹配都支持，命中后清楚告诉你触发了哪条规则。</p>
-              <div class="evolve-chips">
-                <span class="evolve-chip">24h 增量</span>
-                <span class="evolve-chip">条件组合</span>
-                <span class="evolve-chip--y evolve-chip">企业微信·飞书·邮箱</span>
-              </div>
-            </div>
+      <section class="scene" id="scene" aria-labelledby="scene-title">
+        <div class="scene-inner">
+          <div class="section-header">
+            <span class="section-number">01</span>
+            <h2 class="section-title" id="scene-title">现场</h2>
           </div>
-          <div class="evolve-item reveal reveal-d2">
-            <div class="evolve-icon">📁</div>
-            <div class="evolve-content">
-              <h4>对标组</h4>
-              <span class="why">↳ 爆款看完就忘，没地方沉淀</span>
-              <p>把爆款视频归入"动画科普""讽刺类"等样本组。原来只是监控，现在能把好内容存下来，形成可复盘的内容库。</p>
-              <div class="evolve-chips">
-                <span class="evolve-chip">动画科普</span>
-                <span class="evolve-chip">讽刺类</span>
-                <span class="evolve-chip">样本沉淀</span>
-              </div>
-            </div>
-          </div>
-          <div class="evolve-item reveal reveal-d3">
-            <div class="evolve-icon">🔌</div>
-            <div class="evolve-content">
-              <h4>Chrome 插件</h4>
-              <span class="why">↳ 加频道要手动复制链接，太麻烦</span>
-              <p>刷 YouTube 时遇到感兴趣的频道，点一下插件直接加入监控列表，不用离开页面。</p>
-              <div class="evolve-chips">
-                <span class="evolve-chip">一键操作</span>
-                <span class="evolve-chip">设备码同步</span>
-              </div>
-            </div>
-          </div>
-          <div class="evolve-item reveal reveal-d4">
-            <div class="evolve-icon">📊</div>
-            <div class="evolve-content">
-              <h4>多维度排行榜</h4>
-              <span class="why">↳ 只有通知，看不到全局</span>
-              <p>按播放量、内容形态、时间窗口、订阅区间筛选，监控的所有频道视频一屏内对比。</p>
-              <div class="evolve-chips">
-                <span class="evolve-chip">播放量排序</span>
-                <span class="evolve-chip">标签分组</span>
-                <span class="evolve-chip--y evolve-chip">时间窗口</span>
-              </div>
-            </div>
+
+          <div class="num-grid" aria-label="频道定位阶段的三个痛点">
+            <article class="num-card">
+              <span class="big" style="color:rgba(240,112,64,.08)">01</span>
+              <h3>增量只能猜</h3>
+              <p>大部分插件只显示发布时间，增量爆发靠人工推测。</p>
+            </article>
+
+            <article class="num-card">
+              <span class="big" style="color:rgba(43,127,216,.1)">02</span>
+              <h3>数据逐条查</h3>
+              <p>手动刷对标，高峰时期会同时打开几十个视频标签。</p>
+            </article>
+
+            <article class="num-card">
+              <span class="big" style="color:rgba(204,41,54,.1)">03</span>
+              <h3>爆款易错过</h3>
+              <p>真正有价值的信号随时可能爆发，难以及时捕捉。</p>
+            </article>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ====== SECTION 06 — 能力总结 ====== -->
-  <section class="section" id="skills">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-eyebrow">06</span>
-        <h2 class="section-title">这个项目证明了什么</h2>
-      </div>
-      <div class="skill-steps">
-        <div class="skill-step reveal reveal-d1">
-          <div class="skill-dot">一</div>
-          <h4>真实需求<br>定义产品</h4>
-          <p>没有 PRD，需求从自己每天刷视频的痛点里长出来。</p>
-        </div>
-        <div class="skill-step reveal reveal-d2">
-          <div class="skill-dot">二</div>
-          <h4>自动化<br>闭环能力</h4>
-          <p>数据采集、判断、通知全链路独立打通，真正在跑的服务。</p>
-        </div>
-        <div class="skill-step reveal reveal-d3">
-          <div class="skill-dot">三</div>
-          <h4>全栈<br>工程实现</h4>
-          <p>Serverless · Redis · 调度 · 浏览器插件，一个人全部搞定。</p>
-        </div>
-        <div class="skill-step reveal reveal-d4">
-          <div class="skill-dot">四</div>
-          <h4>产品<br>边界意识</h4>
-          <p>清楚当前解决了哪个环节，也知道下一步要补什么。</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <section class="scene scene--plain" id="build" aria-labelledby="build-title">
+        <div class="scene-inner">
+          <div class="section-header">
+            <span class="section-number">02</span>
+            <h2 class="section-title" id="build-title">搭建</h2>
+          </div>
 
-  <!-- ====== SECTION 07 — 下一步 ====== -->
-  <section class="next-section" id="next">
-    <div class="container">
-      <div class="reveal">
-        <span class="section-eyebrow">07</span>
-        <h2 class="section-title" style="margin-bottom:clamp(28px,4vw,48px);">想继续做的事</h2>
-      </div>
-      <div class="next-grid">
-        <div class="next-card next-card--soon reveal reveal-d1">
-          <div class="next-card-label">近期</div>
-          <h3>让「机会挖掘」真正上线</h3>
-          <ul class="next-items">
-            <li>机会挖掘页面：短视频 vs 长视频分开展示</li>
-            <li>在对标组内加入拆解记录（标题、开头、情绪钩子、叙事结构）</li>
-            <li>更精细的阈值设置，目标锁定千万级信号</li>
-          </ul>
-        </div>
-        <div class="next-card next-card--later reveal reveal-d2">
-          <div class="next-card-label">更远处</div>
-          <h3>从「已知频道监控」到「全网发现」</h3>
-          <ul class="next-items">
-            <li>自动检索 5k–10k 订阅的小频道异常增长</li>
-            <li>多用户支持与并发处理</li>
-            <li>AI 辅助的内容趋势判断</li>
-          </ul>
-        </div>
-      </div>
-      <div class="boundary-note reveal">
-        <p>
-          当前版本做到的是：把已知对标频道的监控·判断·通知·样本沉淀串成一条链。
-          「全网低粉爆款发现」是产品目标，但前一条链跑通了，才知道下一条要怎么搭。
-        </p>
-        <p class="note-meta">— 产品边界：知道当前解决了哪个环节，不包装成还没做到的事</p>
-      </div>
-    </div>
-  </section>
+          <div class="num-grid num-grid--4" aria-label="从零到闭环的四个搭建步骤">
+            <article class="num-card">
+              <span class="big" style="color:rgba(240,112,64,.08)">01</span>
+              <h3>拉取频道数据</h3>
+              <p>接入 YouTube Data API，拉取频道和视频基础数据，优化配额消耗。</p>
+            </article>
 
-  <!-- ====== FOOTER ====== -->
-  <footer>
-    <div class="footer-brand">Serena</div>
-    <div class="footer-sub">YOUTUBE SIGNAL HUB · SIDE PROJECT · 2026</div>
-    <a href="#hero" class="footer-back">↑ 回到顶部</a>
-    <br>
-    <a class="icp-link" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">赣ICP备2026015468号-1</a>
+            <article class="num-card">
+              <span class="big" style="color:rgba(43,127,216,.1)">02</span>
+              <h3>获取增量信息</h3>
+              <p>反向获取 vidIQ token，处理接口。</p>
+            </article>
+
+            <article class="num-card">
+              <span class="big" style="color:rgba(204,41,54,.1)">03</span>
+              <h3>配置定时同步任务</h3>
+              <p>反复测试 QStash，排查 Upstash regional endpoint URL。</p>
+            </article>
+
+            <article class="num-card">
+              <span class="big" style="color:rgba(240,112,64,.08)">04</span>
+              <h3>上线规则引擎</h3>
+              <p>自定义触发爆款推送条件，实现闭环。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="quote-band">
+        <div class="quote-inner">
+          <p>第一次收到爆款通知时，我知道这个工具的<span class="hl">闭环成立了</span>——<br>这次跑在生产环境里的，不是 demo。</p>
+          <span class="quote-meta">规则触发 · 企业微信推送 · 20 个视频命中</span>
+        </div>
+      </section>
+
+      <section class="scene" id="evolve" aria-labelledby="evolve-title">
+        <div class="scene-inner">
+          <div class="evolve-layout">
+            <aside class="evolve-aside">
+              <span class="ghost">04</span>
+              <h2 id="evolve-title">每个功能，背后都有一个具体的发现</h2>
+              <p>MVP 跑通之后，每加一个功能都是因为用着用着发现缺了什么。</p>
+            </aside>
+
+            <div class="icon-list">
+              <article class="icon-card">
+                <div class="ia">⚡</div>
+                <div class="ic">
+                  <h3>爆款规则引擎</h3>
+                  <span class="why">↳ 通知了但不知道为什么触发</span>
+                  <p>从单一阈值升级成自定义条件组合，任意/全部匹配都支持，命中后清楚告诉你触发了哪条规则。</p>
+                  <div class="chips">
+                    <span class="chip">24h 增量</span>
+                    <span class="chip">条件组合</span>
+                    <span class="chip primary">企业微信·飞书·邮箱</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="icon-card">
+                <div class="ia">📁</div>
+                <div class="ic">
+                  <h3>对标组</h3>
+                  <span class="why">↳ 爆款看完就忘，没地方沉淀</span>
+                  <p>把爆款视频归入"动画科普""讽刺类"等样本组。原来只是监控，现在能把好内容存下来，形成可复盘的内容库。</p>
+                  <div class="chips">
+                    <span class="chip">动画科普</span>
+                    <span class="chip">讽刺类</span>
+                    <span class="chip primary">样本沉淀</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="icon-card">
+                <div class="ia">🔌</div>
+                <div class="ic">
+                  <h3>Chrome 插件</h3>
+                  <span class="why">↳ 加频道要手动复制链接，太麻烦</span>
+                  <p>刷 YouTube 时遇到感兴趣的频道，点一下插件直接加入监控列表，不用离开页面。</p>
+                  <div class="chips">
+                    <span class="chip primary">一键操作</span>
+                    <span class="chip">设备码同步</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="icon-card">
+                <div class="ia">📊</div>
+                <div class="ic">
+                  <h3>多维度排行榜</h3>
+                  <span class="why">↳ 只有通知，看不到全局</span>
+                  <p>按播放量、内容形态、时间窗口、订阅区间筛选，监控的所有频道视频一屏内对比。</p>
+                  <div class="chips">
+                    <span class="chip">播放量排序</span>
+                    <span class="chip">标签分组</span>
+                    <span class="chip primary">时间窗口</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene--plain" id="skills" aria-labelledby="skills-title">
+        <div class="scene-inner">
+          <div class="section-header">
+            <span class="section-number">05</span>
+            <h2 class="section-title" id="skills-title">这个项目，练到的是这四件事</h2>
+          </div>
+
+          <div class="chair-grid" aria-label="项目验证的四种能力">
+            <div class="chair-typo">
+              <div class="dv" style="background:var(--primary)"></div>
+              <h3>真实需求<br>定义产品</h3>
+              <p>从自己找频道定位的痛点出发，不先写漂亮文档，而是把每天手动刷视频的重复劳动产品化。</p>
+              <span class="mt">insight-driven</span>
+            </div>
+            <div class="chair-typo">
+              <div class="dv" style="background:var(--accent)"></div>
+              <h3>自动化<br>闭环能力</h3>
+              <p>频道池、定时任务、增量判断、通知推送、样本沉淀形成闭环，第一次收到通知时系统真正成立。</p>
+              <span class="mt">closed-loop</span>
+            </div>
+            <div class="chair-typo">
+              <div class="dv" style="background:var(--decor)"></div>
+              <h3>全栈<br>工程实现</h3>
+              <p>纯前端、Vercel Serverless、Upstash Redis、QStash、Resend、企业微信、Chrome 插件都被串起来。</p>
+              <span class="mt">full-stack</span>
+            </div>
+            <div class="chair-typo">
+              <div class="dv" style="background:var(--ink)"></div>
+              <h3>产品<br>边界意识</h3>
+              <p>清楚当前完成的是指定频道监控，而不是全网低粉爆款发现；下一步才是机会挖掘和拆解工作台。</p>
+              <span class="mt">product-scope</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="icp-footer">
+    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">赣ICP备2026015468号-1</a>
   </footer>
 
-  <!-- ====== JS ====== -->
   <script>
-    // Scroll Reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
+    document.querySelectorAll('.kinetic-title .word').forEach((word) => {
+      const chars = Array.from(word.textContent);
+      word.textContent = '';
+      chars.forEach((char) => {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = char;
+        word.appendChild(span);
       });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Nav scroll shadow
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 40);
     });
 
-    // Kinetic Text 组件 #48 — 逗字符悬浮字重
-    (function() {
-      const words = [
-        { text: 'YouTube', hl: false },
-        { text: '\u00A0', hl: false },
-        { text: 'Signal', hl: true },
-        { text: '\u00A0', hl: false },
-        { text: 'Hub', hl: false },
-      ];
-      const container = document.getElementById('kineticHero');
-      if (!container) return;
-      words.forEach(w => {
-        w.text.split('').forEach(char => {
-          const span = document.createElement('span');
-          span.textContent = char;
-          if (w.hl) span.classList.add('hl');
-          container.appendChild(span);
-        });
-      });
-      const spans = container.querySelectorAll('span');
-      spans.forEach((span, i) => {
-        span.addEventListener('mouseenter', () => {
-          if (i > 0) spans[i-1].style.fontWeight = '600';
-          if (i < spans.length - 1) spans[i+1].style.fontWeight = '600';
-        });
-        span.addEventListener('mouseleave', () => {
-          if (i > 0) spans[i-1].style.fontWeight = '';
-          if (i < spans.length - 1) spans[i+1].style.fontWeight = '';
-        });
-      });
-    })();
-  </script>
+    function activate(index) {
+      const chars = Array.from(document.querySelectorAll('.kinetic-title .char'));
+      chars.forEach((char, i) => char.classList.toggle('active', i === index));
+    }
 
+    document.querySelectorAll('.kinetic-title .char').forEach((char, index) => {
+      char.addEventListener('mouseenter', () => activate(index));
+      char.addEventListener('mouseleave', () => char.classList.remove('active'));
+    });
+  </script>
 </body>
 </html>
