@@ -95,11 +95,11 @@ body.works-scene {
   left: 0;
   width: var(--cw, 200px);
   z-index: 1;
-  opacity: 0.9;
+  opacity: 0.72;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  animation: cloudDrift 90s linear infinite;
+  animation: cloudDrift 128s linear infinite;
 }
 @keyframes cloudDrift {
   from { transform: translateX(calc(100vw + 40px)); }
@@ -213,10 +213,55 @@ body.works-scene {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  border: 0;
+  padding: 0;
   background: rgba(26,26,26,0.16);
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
-.scene-dot.active { background: var(--accent); }
+.scene-dot.active {
+  background: var(--accent);
+  transform: scale(1.15);
+}
+
+.scene-pager {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 112px;
+  transform: translateX(-50%);
+  z-index: 4;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.scene-page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(26,26,26,0.14);
+  background: rgba(255,254,250,0.9);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.scene-page-btn:active { transform: translateY(1px); }
+.scene-page-count {
+  min-width: 48px;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-size: 0.74rem;
+  color: rgba(26,26,26,0.55);
+  background: rgba(255,254,250,0.82);
+  border: 1px solid rgba(26,26,26,0.1);
+  border-radius: 999px;
+  padding: 7px 10px;
+  pointer-events: auto;
+}
 
 /* ══ 档案窗口 ══ */
 .case-window {
@@ -523,31 +568,64 @@ body.works-scene {
 @media (max-width: 600px) {
   .case-window { width: calc(100vw - 24px); }
   .case-window.detail-window { width: calc(100vw - 24px); }
-  #ip-works { width: 120px; left: auto; top: auto; right: 16px; bottom: 80px; }
+  #ip-works { display: none; }
   .win-body { max-height: 50vh; }
   .case-window.detail-window .win-body { max-height: 62vh; }
 
-  /* 移动端：车厢横向滑动，一屏一个座位/IP */
+  /* 移动端：车厢分页，一屏一个座位/IP */
   .train-scene {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    display: block;
+    overflow: hidden;
+    --scene-page: 0;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
   .train-scene::-webkit-scrollbar { display: none; }
   .scene-notice { top: 14px; font-size: 0.76rem; padding: 8px 14px; }
   .scene-signal { top: 30%; height: 150px; }
-  .scene-cloud { width: calc(var(--cw, 200px) * 0.6); }
-  .scene-ip-figure { width: 180px; height: 220px; }
-  .scene-ip[data-id="w8"] .scene-ip-figure { width: 264px; height: 220px; }
+  .scene-cloud {
+    top: 7% !important;
+    width: min(44vw, 172px);
+    opacity: 0.58;
+  }
+  .scene-ip-figure { width: 176px; height: 218px; }
+  .scene-ip[data-id="w8"] .scene-ip-figure { width: 256px; height: 218px; }
   .scene-ip {
-    position: static !important;
+    position: absolute !important;
+    left: var(--mobile-left, 0%) !important;
+    top: 0 !important;
+    width: 100%;
+    height: 100%;
     transform: none !important;
     flex: 0 0 100%;
     justify-content: center;
+    gap: 10px;
+    min-height: 100dvh;
+    padding: 92px 24px 168px;
+    box-sizing: border-box;
+    transition: left 0.32s cubic-bezier(.2,0,.2,1);
+    pointer-events: none;
   }
-  .scene-dots { display: flex; }
+  .scene-ip.active-slide { pointer-events: auto; z-index: 3; }
+  .scene-ip-label {
+    max-width: calc(100vw - 88px);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+  }
+  .scene-dots {
+    display: flex;
+    bottom: 104px;
+    gap: 10px;
+  }
+  .scene-dot {
+    width: 11px;
+    height: 11px;
+    border: 1px solid rgba(26,26,26,0.12);
+    background: rgba(255,254,250,0.84);
+  }
+  .scene-dot.active { background: var(--accent); }
+  .scene-pager { display: flex; }
   .mini-metrics,
   .mini-three,
   .mini-boundary,
@@ -574,23 +652,21 @@ body.works-scene {
     </svg>
   </div>
 
-  <img class="scene-cloud" src="assets/cloud-c.png" alt="" aria-hidden="true" draggable="false" style="top:4%;--cw:280px;--cx:12%;animation-duration:118s;animation-delay:-30s">
-  <img class="scene-cloud" src="assets/cloud-a.png" alt="" aria-hidden="true" draggable="false" style="top:10%;--cw:240px;--cx:56%;animation-duration:92s;animation-delay:-64s">
-  <img class="scene-cloud" src="assets/cloud-b.png" alt="" aria-hidden="true" draggable="false" style="top:18%;--cw:165px;--cx:82%;animation-duration:74s;animation-delay:-18s">
+  <img class="scene-cloud" src="assets/cloud-a.png" alt="" aria-hidden="true" draggable="false" style="top:8%;--cw:245px;--cx:58%;animation-duration:132s;animation-delay:-54s">
 
-  <button class="scene-ip" data-id="w6" style="left:18%;top:32%;--ip-accent:#3F51B5">
+  <button class="scene-ip" data-id="w6" style="left:18%;top:32%;--ip-accent:#3F51B5;--mobile-index:0">
     <span class="scene-ip-figure"><img src="assets/ip-music.png" alt="戴耳机听音乐的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">YouTube 爆款监测</span>
   </button>
-  <button class="scene-ip" data-id="w4" style="left:17%;top:71%;--ip-accent:#FF7A59">
+  <button class="scene-ip" data-id="w4" style="left:17%;top:71%;--ip-accent:#FF7A59;--mobile-index:1">
     <span class="scene-ip-figure"><img src="assets/ip-check.png" alt="举着对错牌的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">简历修改网站</span>
   </button>
-  <button class="scene-ip" data-id="w7" style="left:70%;top:24%;--ip-accent:#C2185B">
+  <button class="scene-ip" data-id="w7" style="left:70%;top:24%;--ip-accent:#C2185B;--mobile-index:2">
     <span class="scene-ip-figure"><img src="assets/ip-telescope.png" alt="举着望远镜观测的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">LockLock</span>
   </button>
-  <button class="scene-ip" data-id="w8" style="left:73%;top:72%;--ip-accent:#5C9E3D">
+  <button class="scene-ip" data-id="w8" style="left:73%;top:72%;--ip-accent:#5C9E3D;--mobile-index:3">
     <span class="scene-ip-figure"><img src="assets/ip-clean.png" alt="打扫房间的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">Home</span>
   </button>
@@ -599,10 +675,16 @@ body.works-scene {
 <div class="scene-notice" id="scene-notice" role="status"><span id="scene-notice-text"></span></div>
 
 <div class="scene-dots">
-  <span class="scene-dot"></span>
-  <span class="scene-dot"></span>
-  <span class="scene-dot"></span>
-  <span class="scene-dot"></span>
+  <button class="scene-dot" type="button" aria-label="查看第 1 个项目"></button>
+  <button class="scene-dot" type="button" aria-label="查看第 2 个项目"></button>
+  <button class="scene-dot" type="button" aria-label="查看第 3 个项目"></button>
+  <button class="scene-dot" type="button" aria-label="查看第 4 个项目"></button>
+</div>
+
+<div class="scene-pager" aria-label="项目切换">
+  <button class="scene-page-btn" type="button" data-dir="-1" aria-label="上一个项目">‹</button>
+  <span class="scene-page-count" id="scene-page-count">1 / 4</span>
+  <button class="scene-page-btn" type="button" data-dir="1" aria-label="下一个项目">›</button>
 </div>
 
 <!-- ══ 档案窗口们 ══ -->
@@ -1010,15 +1092,49 @@ body.works-scene {
     }, 700);
   })();
 
-  // 移动端横滑翻页：滚动位置对应更新指示点
+  // 移动端分页：圆点、箭头和页码保持同步
   if (scene) {
     const dots = document.querySelectorAll('.scene-dot');
-    if (dots.length) {
-      scene.addEventListener('scroll', function () {
-        const idx = Math.round(scene.scrollLeft / scene.clientWidth);
-        dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+    const slides = document.querySelectorAll('.scene-ip');
+    const pageCount = document.getElementById('scene-page-count');
+    let currentPage = 0;
+
+    function clampPage(idx) {
+      return Math.max(0, Math.min(slides.length - 1, idx));
+    }
+
+    function updatePager(idx) {
+      currentPage = clampPage(idx);
+      scene.style.setProperty('--scene-page', currentPage);
+      slides.forEach(function (slide, i) {
+        slide.style.setProperty('--mobile-left', ((i - currentPage) * 100) + '%');
+        slide.classList.toggle('active-slide', i === currentPage);
       });
-      dots[0] && dots[0].classList.add('active');
+      dots.forEach(function (d, i) {
+        const active = i === currentPage;
+        d.classList.toggle('active', active);
+        d.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      if (pageCount) pageCount.textContent = (currentPage + 1) + ' / ' + slides.length;
+    }
+
+    function goToPage(idx) {
+      const next = clampPage(idx);
+      updatePager(next);
+    }
+
+    if (dots.length && slides.length) {
+      dots.forEach(function (dot, idx) {
+        dot.addEventListener('click', function () { goToPage(idx); });
+      });
+
+      document.querySelectorAll('.scene-page-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          goToPage(currentPage + Number(btn.dataset.dir || 0));
+        });
+      });
+
+      updatePager(0);
     }
   }
 
