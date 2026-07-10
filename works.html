@@ -20,13 +20,14 @@ body.works-scene {
   overflow-x: hidden;
 }
 
-/* ══ IP 形象（右下角，可拖动）══ */
+/* ══ IP 形象（居中，可拖动）══
+   和 index 页同为 240px 居中——跨页过渡时 IP 原地不动，四个事件 IP 环绕四周 */
 #ip-works {
   position: fixed;
-  right: 48px;
-  bottom: 80px;
+  left: calc(50% - 120px);
+  top: calc(50% - 177px);   /* 240px 宽 × 图片比例 2399/1625 ≈ 354px 高 */
   z-index: 50;
-  width: 180px;
+  width: 240px;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
@@ -112,25 +113,32 @@ body.works-scene {
   }
 }
 
-.scene-caption {
+/* 顶部长条通知：沿用对话气泡的手账样式，打字机打完后常驻（最多两行） */
+.scene-notice {
   position: fixed;
-  top: 24px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
-  font-family: var(--font-title);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  padding: 3px 12px;
-  opacity: 0.78;
-  background: rgba(255,254,250,0.85);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  white-space: nowrap;
+  max-width: min(600px, calc(100vw - 32px));
+  padding: 10px 18px;
+  background: var(--bg);
+  border: 1.5px solid rgba(26,26,26,0.4);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--ink);
+  font-family: "Noto Serif SC", serif;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
+.scene-notice.show { opacity: 1; }
 
 .scene-ip {
   position: absolute;
@@ -151,41 +159,6 @@ body.works-scene {
   transition: left 0.25s ease, top 0.25s ease;
 }
 .scene-ip.dragging { cursor: grabbing; transition: none; }
-
-/* 进场一次性对话气泡（pudding 式打字机，播完淡出） */
-.scene-ip-bubble {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  left: 55%;
-  min-width: 150px;
-  max-width: 230px;
-  padding: 9px 13px;
-  background: var(--bg);
-  border: 1.5px solid rgba(26,26,26,0.4);
-  border-radius: 10px;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  text-align: left;
-  color: var(--ink);
-  font-family: "Noto Serif SC", serif;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  z-index: 4;
-}
-.scene-ip-bubble.show { opacity: 1; }
-.scene-ip-bubble::after {
-  content: '';
-  position: absolute;
-  left: 22px;
-  bottom: -7px;
-  width: 12px;
-  height: 12px;
-  background: var(--bg);
-  border-right: 1.5px solid rgba(26,26,26,0.4);
-  border-bottom: 1.5px solid rgba(26,26,26,0.4);
-  transform: rotate(45deg) skew(8deg, 8deg);
-}
 
 /* 手绘线稿角色图（透明底 PNG 已裁到画面内容边缘，画中自带落地阴影）。
    高度 250px 让角色和右下角沙发 Serena（180px 宽 ≈ 266px 高）视觉等大 */
@@ -212,10 +185,10 @@ body.works-scene {
   transform: translateY(-4px);
 }
 .scene-ip-label {
-  font-size: 0.74rem;
+  font-size: 0.9rem;
   color: var(--ink);
   background: var(--bg);
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 6px;
   border: 1px solid color-mix(in srgb, var(--ip-accent, var(--accent)) 40%, transparent);
   white-space: nowrap;
@@ -550,7 +523,7 @@ body.works-scene {
 @media (max-width: 600px) {
   .case-window { width: calc(100vw - 24px); }
   .case-window.detail-window { width: calc(100vw - 24px); }
-  #ip-works { width: 120px; right: 16px; bottom: 80px; }
+  #ip-works { width: 120px; left: auto; top: auto; right: 16px; bottom: 80px; }
   .win-body { max-height: 50vh; }
   .case-window.detail-window .win-body { max-height: 62vh; }
 
@@ -563,7 +536,7 @@ body.works-scene {
     scrollbar-width: none;
   }
   .train-scene::-webkit-scrollbar { display: none; }
-  .scene-caption { top: 18px; font-size: 0.64rem; }
+  .scene-notice { top: 14px; font-size: 0.76rem; padding: 8px 14px; }
   .scene-signal { top: 30%; height: 150px; }
   .scene-cloud { width: calc(var(--cw, 200px) * 0.6); }
   .scene-ip-figure { width: 180px; height: 220px; }
@@ -605,26 +578,25 @@ body.works-scene {
   <img class="scene-cloud" src="assets/cloud-a.png" alt="" aria-hidden="true" draggable="false" style="top:10%;--cw:240px;--cx:56%;animation-duration:92s;animation-delay:-64s">
   <img class="scene-cloud" src="assets/cloud-b.png" alt="" aria-hidden="true" draggable="false" style="top:18%;--cw:165px;--cx:82%;animation-duration:74s;animation-delay:-18s">
 
-  <button class="scene-ip" data-id="w6" style="left:20%;top:38%;--ip-accent:#3F51B5">
-    <span class="scene-ip-bubble" id="scene-bubble" aria-hidden="true"><span id="scene-bubble-text"></span></span>
+  <button class="scene-ip" data-id="w6" style="left:18%;top:32%;--ip-accent:#3F51B5">
     <span class="scene-ip-figure"><img src="assets/ip-music.png" alt="戴耳机听音乐的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">YouTube 爆款监测</span>
   </button>
-  <button class="scene-ip" data-id="w4" style="left:36%;top:55%;--ip-accent:#FF7A59">
+  <button class="scene-ip" data-id="w4" style="left:17%;top:71%;--ip-accent:#FF7A59">
     <span class="scene-ip-figure"><img src="assets/ip-check.png" alt="举着对错牌的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">简历修改网站</span>
   </button>
-  <button class="scene-ip" data-id="w7" style="left:66%;top:29%;--ip-accent:#C2185B">
+  <button class="scene-ip" data-id="w7" style="left:70%;top:24%;--ip-accent:#C2185B">
     <span class="scene-ip-figure"><img src="assets/ip-telescope.png" alt="举着望远镜观测的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">LockLock</span>
   </button>
-  <button class="scene-ip" data-id="w8" style="left:72%;top:64%;--ip-accent:#5C9E3D">
+  <button class="scene-ip" data-id="w8" style="left:73%;top:72%;--ip-accent:#5C9E3D">
     <span class="scene-ip-figure"><img src="assets/ip-clean.png" alt="打扫房间的 Serena 线稿" draggable="false"></span>
     <span class="scene-ip-label">Home</span>
   </button>
 </div>
 
-<div class="scene-caption">[ 异常事件记录 · 捕获信号 4 例 · 点击角色查看 ]</div>
+<div class="scene-notice" id="scene-notice" role="status"><span id="scene-notice-text"></span></div>
 
 <div class="scene-dots">
   <span class="scene-dot"></span>
@@ -1016,26 +988,24 @@ body.works-scene {
     setTimeout(playRound, 1600);  // 等打字机气泡先开场
   })();
 
-  /* ── 进场一次性打字机气泡（pudding 式）：逐字打出后停留再淡出 ── */
+  /* ── 顶部通知条（pudding 式打字机）：逐字打出后常驻，不再消失 ── */
   (function () {
-    const bubble = document.getElementById('scene-bubble');
-    const bubbleText = document.getElementById('scene-bubble-text');
-    if (!bubble || !bubbleText) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const notice = document.getElementById('scene-notice');
+    const noticeText = document.getElementById('scene-notice-text');
+    if (!notice || !noticeText) return;
     const msg = '捕获到 4 条异常信号，点击角色查看档案。';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      noticeText.textContent = msg;
+      notice.classList.add('show');
+      return;
+    }
     setTimeout(function () {
-      bubble.classList.add('show');
+      notice.classList.add('show');
       let i = 0;
       const timer = setInterval(function () {
         i++;
-        bubbleText.textContent = msg.slice(0, i);
-        if (i >= msg.length) {
-          clearInterval(timer);
-          setTimeout(function () {
-            bubble.classList.remove('show');
-            setTimeout(function () { bubble.remove(); }, 700);
-          }, 2600);
-        }
+        noticeText.textContent = msg.slice(0, i);
+        if (i >= msg.length) clearInterval(timer);
       }, 70);
     }, 700);
   })();

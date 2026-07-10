@@ -583,16 +583,20 @@ body.intro-done .page-shell {
   });
 
 
+  /* 桌面端 works 页 IP 同为 240px 居中：把（可能被拖离的）IP 送回正中即可，跨页视觉上原地不动；
+     移动端 works 页 IP 仍在右下角（120px），保持原来的飞入角落 */
   function moveIpToCorner() {
     const rect = ipWrapper.getBoundingClientRect();
     const isMobile = window.innerWidth <= 600;
-    const scale = isMobile ? 0.8 : 0.75;
-    const rightGap = isMobile ? 16 : 48;
-    const bottomGap = 80;
+    const scale = isMobile ? 0.8 : 1;
     const startX = rect.left;
     const startY = rect.top;
-    const targetX = window.innerWidth - rightGap - rect.width * scale;
-    const targetY = window.innerHeight - bottomGap - rect.height * scale;
+    const targetX = isMobile
+      ? window.innerWidth - 16 - rect.width * scale
+      : (window.innerWidth - rect.width) / 2;
+    const targetY = isMobile
+      ? window.innerHeight - 80 - rect.height * scale
+      : (window.innerHeight - rect.height) / 2;
     const duration = 940;
     const startedAt = performance.now();
 
