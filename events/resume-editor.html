@@ -41,13 +41,7 @@
 
   ::selection { background: var(--accent); color: #fff; }
 
-  .page {
-    position: relative;
-    background:
-      radial-gradient(circle at 86% 6%, rgba(43,127,216,.07), transparent 30%),
-      radial-gradient(circle at 6% 60%, rgba(240,112,64,.06), transparent 32%),
-      var(--cream);
-  }
+  .page { position: relative; background: var(--cream); }
 
   .wrap { width: min(1120px, calc(100% - clamp(36px, 8vw, 96px))); margin: 0 auto; }
 
@@ -406,7 +400,6 @@
   </nav>
 
   <section class="hero" id="hero">
-    <span class="deco-word" style="right:-.1em; top:-.08em">Resume</span>
     <div class="wrap">
       <div class="hero-inner reveal">
         <h1 class="hero-title">Resume <span>Editor</span></h1>

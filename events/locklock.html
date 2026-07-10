@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LockLock · Serena</title>
+<script>
+  if (new URLSearchParams(window.location.search).get('embed') === '1') {
+    document.documentElement.classList.add('is-embed');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,700;1,400;1,600;1,700&family=Schoolbell&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #F07040;
+    --accent: #2B7FD8;
+    --decor: #CC2936;
+    --cream: #FFFDF9;
+    --cream-dark: #F9F8F6;
+    --ink: #1A1A2E;
+    --ink-light: #44445A;
+    --ink-faint: #8A8A9A;
+    --line: rgba(26, 26, 46, .1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    line-height: 1.78;
+    color: var(--ink);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent); color: #fff; }
+
+  .page { position: relative; background: var(--cream); }
+
+  .wrap { width: min(1120px, calc(100% - clamp(36px, 8vw, 96px))); margin: 0 auto; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-d1 { transition-delay: .1s; }
+  .reveal-d2 { transition-delay: .2s; }
+  .reveal-d3 { transition-delay: .3s; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-family: 'Fira Code', monospace;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .eyebrow::before { content: ''; width: 28px; height: 3px; background: var(--primary); }
+
+  .deco-word {
+    position: absolute;
+    z-index: 0;
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(5rem, 13vw, 10.5rem);
+    line-height: .8;
+    color: rgba(240, 112, 64, .07);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    height: 58px;
+    padding: 0 clamp(26px, 4vw, 52px);
+    background: rgba(255, 253, 249, .88);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    color: var(--primary);
+    font-family: 'Schoolbell', cursive;
+    font-size: 1.32rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 3vw, 34px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs a {
+    position: relative;
+    color: var(--ink-light);
+    font-size: .84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .2s ease;
+  }
+  .tabs a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .22s ease;
+  }
+  .tabs a:hover { color: var(--primary); }
+  .tabs a:hover::after { transform: scaleX(1); }
+
+  /* ===== Hero: flat bg, centered title, no decoration ===== */
+  .hero {
+    padding: clamp(130px, 20vh, 224px) 0 clamp(120px, 17vh, 196px);
+    text-align: center;
+  }
+  .hero-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 6.4rem);
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    color: var(--ink);
+  }
+  .hero-title span { color: var(--primary); }
+  .hero-tagline {
+    margin: 22px auto 0;
+    max-width: 26em;
+    color: var(--ink-light);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* ===== Scene head ===== */
+  .section-head { margin-bottom: clamp(36px, 6vw, 64px); }
+  .section-head h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  /* ===== 01 背景: magazine-cut cards (component #1A) ===== */
+  .scene-01 { background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; }
+  .g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(20px, 3vw, 28px); }
+  .magazine-card {
+    padding: clamp(28px, 3vw, 36px);
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 26px rgba(26, 26, 46, .05);
+  }
+  .magazine-card h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+    font-weight: 900;
+    line-height: 1.24;
+    min-height: 2.5em;
+    color: var(--mc, var(--ink));
+  }
+  .magazine-card .desc { margin-top: 16px; color: var(--ink-light); font-size: .94rem; line-height: 1.86; }
+  .magazine-card .aux {
+    display: block;
+    margin-top: 18px;
+    font-family: 'Fira Code', monospace;
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: var(--mc, var(--primary));
+  }
+
+  /* ===== 02 搭建: numbered card grid (component #34) ===== */
+  .scene-02 { position: relative; padding: clamp(90px, 12vh, 150px) 0; overflow: hidden; }
+  .numgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 2.6vw, 28px); }
+  .numgrid-card {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(26px, 3vw, 32px) clamp(22px, 2.6vw, 28px);
+    background: #fff;
+    border: 1px solid var(--line);
+  }
+  .numgrid-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    font-family: 'Schoolbell', cursive;
+    font-size: 3.2rem;
+    color: var(--nc, var(--primary));
+    opacity: .14;
+  }
+  .numgrid-card h4 {
+    position: relative;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.12rem;
+    font-weight: 900;
+    color: var(--ink);
+  }
+  .numgrid-card p { position: relative; margin-top: 10px; color: var(--ink-light); font-size: .9rem; line-height: 1.82; }
+
+  /* ===== 03 功能: interactive checklist (component #35) ===== */
+  .scene-03 { background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; }
+  .checklist { max-width: 640px; }
+  .cl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .cl-item:first-child { padding-top: 0; }
+  .cl-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .cl-chk {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 3px;
+    border: 2px solid var(--primary);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cl-chk.checked { background: var(--primary); border-color: var(--primary); }
+  .cl-chk.checked::after { content: '\2713'; color: #fff; font-size: .78rem; }
+  .cl-content h4 { font-family: 'Noto Serif SC', serif; font-size: 1.06rem; font-weight: 900; }
+  .cl-content p { margin-top: 6px; color: var(--ink-light); font-size: .9rem; line-height: 1.8; }
+  .cl-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-family: 'Fira Code', monospace;
+    font-size: .66rem;
+    letter-spacing: .06em;
+  }
+
+  .filefoot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding: 40px 0 56px;
+    border-top: 1px solid var(--line);
+    font-family: 'Fira Code', monospace;
+    color: var(--ink-faint);
+    font-size: .72rem;
+  }
+  .icp-footer {
+    padding: 0 clamp(20px, 5vw, 48px) 40px;
+    text-align: center;
+    font-size: .75rem;
+    color: var(--ink-faint);
+  }
+  .icp-footer a { text-decoration: none; color: inherit; }
+  .icp-footer a:hover { color: var(--primary); text-decoration: underline; }
+
+  /* ===== Embed (iframe inside works.html) ===== */
+  html.is-embed body { overflow-x: hidden; }
+  html.is-embed .nav { padding: 0 16px; height: 50px; gap: 14px; }
+  html.is-embed .logo { font-size: 1.05rem; }
+  html.is-embed .tabs { gap: 14px; }
+  html.is-embed .tabs a { font-size: .76rem; }
+  html.is-embed .wrap { width: min(660px, calc(100% - 40px)); }
+  html.is-embed .hero { padding: 56px 0 60px; }
+  html.is-embed .hero-title { font-size: clamp(2.2rem, 8vw, 3.4rem); }
+  html.is-embed .scene-01, html.is-embed .scene-02, html.is-embed .scene-03 { padding: 60px 0; }
+  html.is-embed .g2 { grid-template-columns: 1fr; }
+  html.is-embed .numgrid { grid-template-columns: 1fr; }
+  html.is-embed .section-head { margin-bottom: 32px; }
+  html.is-embed .section-head h2 { font-size: clamp(1.9rem, 5vw, 2.6rem); }
+
+  @media (max-width: 900px) {
+    .g2 { grid-template-columns: 1fr; }
+    .numgrid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    body { font-size: 15px; }
+    .wrap { width: min(100% - 34px, 430px); }
+    .nav { padding: 0 16px; gap: 16px; }
+    .logo { font-size: 1.1rem; }
+    .tabs { gap: 16px; }
+    .tabs a { font-size: .78rem; }
+    .hero-title { font-size: clamp(2.3rem, 11vw, 3.4rem); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="nav" aria-label="Primary">
+    <a class="logo" href="#hero">LockLock</a>
+    <div class="tabs" role="list">
+      <a href="#scene-01" role="listitem">背景</a>
+      <a href="#scene-02" role="listitem">搭建</a>
+      <a href="#scene-03" role="listitem">功能</a>
+    </div>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div class="reveal">
+        <h1 class="hero-title">Lock<span>Lock</span></h1>
+        <p class="hero-tagline">一款帮你利用锁屏空间的轻应用</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene-01" id="scene-01">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">01 背景</span>
+        <h2>背景</h2>
+      </div>
+      <div class="g2">
+        <div class="magazine-card reveal" style="--mc:var(--primary)">
+          <h3>日均解锁手机 136 次</h3>
+          <p class="desc">完全是下意识动作，大部分时候并没有特别明确要做的事情。</p>
+          <span class="aux">UNCONSCIOUS HABIT</span>
+        </div>
+        <div class="magazine-card reveal reveal-d1" style="--mc:var(--accent)">
+          <h3>锁屏待办 App 大量涌现</h3>
+          <p class="desc">只局限在待办事项，自定义程度不高。</p>
+          <span class="aux">LIMITED CUSTOMIZATION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene-02" id="scene-02">
+    <span class="deco-word" style="left:-.06em; top:.15em; color:rgba(43,127,216,.07)">02</span>
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">02 搭建</span>
+        <h2>搭建</h2>
+      </div>
+      <div class="numgrid">
+        <div class="numgrid-card reveal" data-num="01" style="--nc:var(--primary)">
+          <h4>和 Claude 讨论需求和效果</h4>
+        </div>
+        <div class="numgrid-card reveal reveal-d1" data-num="02" style="--nc:var(--accent)">
+          <h4>明确技术边界</h4>
+          <p>不调用生图模型，用代码生成。</p>
+        </div>
+        <div class="numgrid-card reveal reveal-d2" data-num="03" style="--nc:var(--decor)">
+          <h4>测试解锁切换效果</h4>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene-03" id="scene-03">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">03 功能</span>
+        <h2>功能</h2>
+      </div>
+      <div class="checklist reveal">
+        <div class="cl-item">
+          <div class="cl-chk checked"></div>
+          <div class="cl-content">
+            <h4>生成纯色 / 渐变色壁纸</h4>
+            <span class="cl-tag">壁纸</span>
+          </div>
+        </div>
+        <div class="cl-item">
+          <div class="cl-chk checked"></div>
+          <div class="cl-content">
+            <h4>亮屏时随机切换</h4>
+            <span class="cl-tag">随机</span>
+          </div>
+        </div>
+        <div class="cl-item">
+          <div class="cl-chk checked"></div>
+          <div class="cl-content">
+            <h4>支持导入 CSV</h4>
+            <span class="cl-tag">导入</span>
+          </div>
+        </div>
+        <div class="cl-item">
+          <div class="cl-chk checked"></div>
+          <div class="cl-content">
+            <h4>高度自定义</h4>
+            <span class="cl-tag">自定义</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap filefoot">
+    <span>CASE · LockLock</span>
+    <span>TYPE · 锁屏轻应用</span>
+  </div>
+
+  <footer class="icp-footer">
+    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">赣ICP备2026015468号-1</a>
+  </footer>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelectorAll('.cl-chk').forEach(el => {
+    el.addEventListener('click', () => el.classList.toggle('checked'));
+  });
+</script>
+</body>
+</html>
