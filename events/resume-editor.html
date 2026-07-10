@@ -88,40 +88,63 @@
     user-select: none;
   }
 
-  /* ===== Nav ===== */
+  /* ===== Nav (matched to youtube-signal-hub.html: logo left / tabs right) ===== */
   .nav {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 20;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
+    gap: 28px;
     height: 58px;
-    padding: 0 clamp(20px, 4vw, 48px);
+    padding: 0 clamp(26px, 4vw, 52px);
     background: rgba(255, 253, 249, .88);
-    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(12px);
   }
-  .nav-back {
-    color: var(--ink-light);
-    text-decoration: none;
-    font-size: .82rem;
-    font-weight: 700;
-  }
-  .nav-back:hover { color: var(--primary); }
-  .nav-mark {
-    font-family: 'Schoolbell', cursive;
-    font-size: 1.15rem;
+  .logo {
     color: var(--primary);
-  }
-  .nav-tag {
-    font-family: 'Fira Code', monospace;
-    font-size: .68rem;
-    letter-spacing: .06em;
-    color: var(--ink-faint);
+    font-family: 'Schoolbell', cursive;
+    font-size: 1.32rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
     white-space: nowrap;
   }
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 3vw, 34px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs a {
+    position: relative;
+    color: var(--ink-light);
+    font-size: .84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .2s ease;
+  }
+  .tabs a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .22s ease;
+  }
+  .tabs a:hover { color: var(--primary); }
+  .tabs a:hover::after { transform: scaleX(1); }
 
   /* ===== Hero ===== */
   .hero {
@@ -223,119 +246,146 @@
     line-height: 1.1;
   }
 
-  /* ===== 01 现场: split bleed ===== */
-  .scene-01 { position: relative; background: var(--cream); }
-  .split {
+  /* ===== 01 现场: icon-side cards (component #1D) ===== */
+  .scene-01 { position: relative; padding: clamp(90px, 12vh, 150px) 0; }
+  .icon-card-grid {
     display: grid;
-    grid-template-columns: .78fr 1.22fr;
-    min-height: clamp(480px, 68vh, 720px);
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(24px, 3vw, 36px);
   }
-  .split-left {
-    position: relative;
+  .icon-card {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: clamp(48px, 6vw, 88px) clamp(28px, 5vw, 64px);
+    gap: 22px;
+    padding: clamp(28px, 3vw, 36px);
+    background: #fff;
+    border: 1px solid var(--line);
   }
-  .split-right {
-    background: var(--cream-dark);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: clamp(48px, 6vw, 88px) clamp(28px, 6vw, 96px);
-  }
-  .pain-row {
-    display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 20px;
-    padding: 30px 0;
-    border-top: 1px solid var(--line);
-  }
-  .pain-row:first-child { border-top: none; padding-top: 0; }
-  .pain-row:last-child { padding-bottom: 0; }
-  .pain-mark {
-    font-family: 'Spectral', serif;
-    font-style: italic;
-    font-weight: 700;
-    font-size: 1.7rem;
-    color: var(--primary);
-    opacity: .55;
-  }
-  .pain-row:nth-child(2) .pain-mark { color: var(--accent); }
-  .pain-row h3 {
-    margin-bottom: 10px;
-    font-family: 'Noto Serif SC', serif;
-    font-size: 1.22rem;
-    font-weight: 900;
-  }
-  .pain-row p { color: var(--ink-light); font-size: .96rem; line-height: 1.9; }
-  .pain-row em { font-style: normal; font-weight: 700; color: var(--decor); }
-
-  /* ===== 02 搭建: vertical step line ===== */
-  .scene-02 { position: relative; padding: clamp(90px, 12vh, 150px) 0; overflow: hidden; }
-  .steps { position: relative; padding-left: clamp(64px, 8vw, 84px); display: flex; flex-direction: column; gap: clamp(36px, 5vw, 54px); }
-  .steps::before {
-    content: '';
-    position: absolute;
-    left: clamp(25px, 3.1vw, 33px);
-    top: 6px; bottom: 6px;
-    border-left: 2px dashed rgba(26, 26, 46, .2);
-  }
-  .step { position: relative; }
-  .step-pin {
-    position: absolute;
-    left: clamp(-64px, -8vw, -84px);
-    top: -6px;
+  .icon-card-icon {
+    flex: none;
     display: grid;
     place-items: center;
-    width: 52px; height: 52px;
+    width: 56px;
+    height: 56px;
+    background: var(--cream-dark);
+    border: 1.5px dashed var(--dc, var(--primary));
+    font-size: 1.6rem;
+  }
+  .icon-card-num {
+    display: block;
+    margin-bottom: 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: .68rem;
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+  }
+  .icon-card-body h3 {
+    margin-bottom: 10px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+  .icon-card-body p { color: var(--ink-light); font-size: .95rem; line-height: 1.88; }
+  .icon-card-body em { font-style: normal; font-weight: 700; color: var(--decor); }
+
+  /* ===== 02 搭建: horizontal timeline (component #41) ===== */
+  .scene-02 { position: relative; background: var(--cream-dark); padding: clamp(90px, 12vh, 150px) 0; overflow: hidden; }
+  .timeline-wrap { overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .timeline-wrap::-webkit-scrollbar { display: none; }
+  .timeline-hint {
+    margin-top: 20px;
+    font-family: 'Fira Code', monospace;
+    font-size: .72rem;
+    color: var(--ink-faint);
+  }
+  .timeline {
+    position: relative;
+    display: flex;
+    gap: clamp(16px, 2.4vw, 30px);
+    min-width: max-content;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--line);
+  }
+  .tl-item { position: relative; width: clamp(160px, 15vw, 202px); padding-top: 58px; }
+  .tl-pin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--sc, var(--primary));
     color: #fff;
     font-family: 'Spectral', serif;
     font-weight: 700;
-    font-size: 1.1rem;
-    box-shadow: 0 8px 20px rgba(26, 26, 46, .14);
+    font-size: .95rem;
+    box-shadow: 0 8px 18px rgba(26, 26, 46, .14);
   }
-  .step-body h3 {
-    margin-bottom: 8px;
-    font-family: 'Noto Serif SC', serif;
-    font-size: 1.15rem;
-    font-weight: 900;
-  }
-  .step-body p { max-width: 540px; color: var(--ink-light); font-size: .94rem; line-height: 1.86; }
-  .step-body .tech {
+  .tl-phase {
     display: block;
-    margin-top: 12px;
+    margin-bottom: 6px;
     font-family: 'Fira Code', monospace;
-    font-size: .74rem;
-    color: var(--ink-faint);
-  }
-
-  /* ===== 03 其他功能: spec grid ===== */
-  .scene-03 { background: var(--cream-dark); }
-  .spec-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 40px);
-  }
-  .spec-item { padding-top: 18px; border-top: 3px solid var(--dc, var(--primary)); }
-  .spec-tag {
-    display: block;
-    margin-bottom: 10px;
-    font-family: 'Fira Code', monospace;
-    font-size: .68rem;
+    font-size: .66rem;
     letter-spacing: .1em;
     text-transform: uppercase;
     color: var(--ink-faint);
   }
-  .spec-item h3 {
+  .tl-item h3 {
+    margin-bottom: 8px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.08rem;
+    font-weight: 900;
+  }
+  .tl-item p { color: var(--ink-light); font-size: .9rem; line-height: 1.82; }
+  .tl-item .tech {
+    display: block;
+    margin-top: 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: .7rem;
+    color: var(--ink-faint);
+  }
+
+  /* ===== 03 其他功能: tag cards (component #1C) ===== */
+  .scene-03 { padding: clamp(90px, 12vh, 150px) 0; }
+  .tag-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(24px, 3vw, 32px);
+  }
+  .tag-card {
+    padding: clamp(26px, 3vw, 32px);
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 26px rgba(26, 26, 46, .05);
+  }
+  .tag-pill {
+    display: inline-flex;
+    margin-bottom: 16px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--tc-bg, rgba(240, 112, 64, .1));
+    color: var(--tc, var(--primary));
+    font-family: 'Fira Code', monospace;
+    font-size: .66rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .tag-card h3 {
     margin-bottom: 8px;
     font-family: 'Noto Serif SC', serif;
     font-size: 1.1rem;
     font-weight: 900;
   }
-  .spec-item p { color: var(--ink-light); font-size: .9rem; line-height: 1.82; }
+  .tag-card p { color: var(--ink-light); font-size: .9rem; line-height: 1.82; }
 
   /* ===== Closing ===== */
   .closing { background: var(--accent); color: #fff; padding: clamp(70px, 10vw, 116px) 0; text-align: center; }
@@ -376,43 +426,41 @@
 
   /* ===== Embed (iframe inside works.html) ===== */
   html.is-embed body { overflow-x: hidden; }
-  html.is-embed .nav { padding: 0 16px; height: 50px; }
-  html.is-embed .nav-back { font-size: .74rem; }
-  html.is-embed .nav-mark { font-size: 1rem; }
-  html.is-embed .nav-tag { display: none; }
+  html.is-embed .nav { padding: 0 16px; height: 50px; gap: 14px; }
+  html.is-embed .logo { font-size: 1.05rem; }
+  html.is-embed .tabs { gap: 14px; }
+  html.is-embed .tabs a { font-size: .76rem; }
   html.is-embed .wrap { width: min(660px, calc(100% - 40px)); }
   html.is-embed .hero { padding: 40px 0 60px; }
   html.is-embed .hero-grid { grid-template-columns: 1fr; min-height: auto; gap: 40px; }
   html.is-embed .hero h1 { font-size: clamp(2.1rem, 6vw, 3.2rem); max-width: 9em; }
   html.is-embed .hero-visual { height: 260px; order: -1; }
-  html.is-embed .split { grid-template-columns: 1fr; min-height: auto; }
+  html.is-embed .scene-01, html.is-embed .scene-02, html.is-embed .scene-03 { padding: 60px 0; }
+  html.is-embed .icon-card-grid { grid-template-columns: 1fr; }
   html.is-embed .section-head { margin-bottom: 32px; }
   html.is-embed .section-head h2 { font-size: clamp(1.9rem, 5vw, 2.6rem); }
-  html.is-embed .scene-02 { padding: 60px 0; }
-  html.is-embed .spec-grid { grid-template-columns: 1fr 1fr; }
+  html.is-embed .tag-grid { grid-template-columns: 1fr 1fr; }
   html.is-embed .closing { padding: 48px 0; }
   html.is-embed .closing-text { font-size: clamp(1.8rem, 6vw, 2.6rem); }
 
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; min-height: auto; gap: 56px; }
     .hero-visual { order: -1; height: 280px; }
-    .split { grid-template-columns: 1fr; min-height: auto; }
-    .spec-grid { grid-template-columns: repeat(2, 1fr); }
-    html.is-embed .spec-grid { grid-template-columns: 1fr; }
+    .icon-card-grid { grid-template-columns: 1fr; }
+    .tag-grid { grid-template-columns: repeat(2, 1fr); }
+    html.is-embed .tag-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 600px) {
     body { font-size: 15px; }
     .wrap { width: min(100% - 34px, 430px); }
-    .nav { padding: 0 16px; }
-    .nav-back { font-size: .72rem; }
-    .nav-mark { display: none; }
-    .nav-tag { display: none; }
+    .nav { padding: 0 16px; gap: 16px; }
+    .logo { font-size: 1.1rem; }
+    .tabs { gap: 16px; }
+    .tabs a { font-size: .78rem; }
     .hero h1 { max-width: 9em; }
-    .split-left, .split-right { padding: 40px 24px; }
-    .steps { padding-left: 66px; }
-    .step-pin { left: -66px; width: 46px; height: 46px; font-size: 1rem; }
-    .spec-grid { grid-template-columns: 1fr; }
+    .icon-card { flex-direction: column; }
+    .tag-grid { grid-template-columns: 1fr; }
     .closing-text { max-width: 10ch; }
   }
 
@@ -425,13 +473,16 @@
 <body>
 <div class="page">
 
-  <nav class="nav">
-    <a class="nav-back" href="../works.html">← 返回异常事件记录</a>
-    <span class="nav-mark">Resume Editor</span>
-    <span class="nav-tag">#2026-001 · RESUME EDITOR</span>
+  <nav class="nav" aria-label="Primary">
+    <a class="logo" href="#hero">Resume Editor</a>
+    <div class="tabs" role="list">
+      <a href="#scene-01" role="listitem">现场</a>
+      <a href="#scene-02" role="listitem">搭建</a>
+      <a href="#scene-03" role="listitem">功能</a>
+    </div>
   </nav>
 
-  <section class="hero">
+  <section class="hero" id="hero">
     <span class="deco-word" style="right:-.1em; top:-.08em">Resume</span>
     <div class="wrap hero-grid">
       <div class="hero-copy reveal">
@@ -455,23 +506,25 @@
     </div>
   </section>
 
-  <section class="scene-01">
-    <div class="split">
-      <div class="split-left reveal">
+  <section class="scene-01" id="scene-01">
+    <div class="wrap">
+      <div class="section-head reveal">
         <span class="eyebrow">01 现场</span>
         <h2>现场</h2>
       </div>
-      <div class="split-right reveal reveal-d1">
-        <div class="pain-row">
-          <span class="pain-mark">01</span>
-          <div>
+      <div class="icon-card-grid">
+        <div class="icon-card reveal" style="--dc:var(--primary)">
+          <div class="icon-card-icon">🗂️</div>
+          <div class="icon-card-body">
+            <span class="icon-card-num">01 · GUESSWORK</span>
             <h3>版本靠猜</h3>
             <p>每投一个岗位就另存一份 Word——<em>「简历-产品-v3」「简历-运营-最终版」「简历-运营-真的最终版」</em>。文件名越改越长，到最后完全不知道哪份投了哪家。</p>
           </div>
         </div>
-        <div class="pain-row">
-          <span class="pain-mark">02</span>
-          <div>
+        <div class="icon-card reveal reveal-d1" style="--dc:var(--accent)">
+          <div class="icon-card-icon">🧠</div>
+          <div class="icon-card-body">
+            <span class="icon-card-num">02 · MEMORY</span>
             <h3>改动靠记</h3>
             <p>同一段实习经历，投不同岗位时改动了哪些，哪家公司几号投的、用的是哪个版本的简历、JD 是什么，全靠记忆。</p>
           </div>
@@ -480,83 +533,81 @@
     </div>
   </section>
 
-  <section class="scene-02">
+  <section class="scene-02" id="scene-02">
     <span class="deco-word" style="left:-.06em; top:.15em; color:rgba(43,127,216,.07)">02</span>
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">02 搭建</span>
         <h2>搭建</h2>
       </div>
-      <div class="steps">
-        <div class="step reveal">
-          <div class="step-pin" style="--sc:var(--primary)">1</div>
-          <div class="step-body">
+      <div class="timeline-wrap">
+        <div class="timeline">
+          <div class="tl-item reveal">
+            <div class="tl-pin" style="--sc:var(--primary)">1</div>
+            <span class="tl-phase">Phase 1</span>
             <h3>一个下午出 MVP</h3>
             <p>技术栈：React + Tailwind + FastAPI + Supabase，当晚部署上线。</p>
             <span class="tech">React / Tailwind / FastAPI / Supabase</span>
           </div>
-        </div>
-        <div class="step reveal reveal-d1">
-          <div class="step-pin" style="--sc:var(--accent)">2</div>
-          <div class="step-body">
+          <div class="tl-item reveal reveal-d1">
+            <div class="tl-pin" style="--sc:var(--accent)">2</div>
+            <span class="tl-phase">Phase 2</span>
             <h3>核心功能闭环</h3>
             <p>粘贴 JD → AI 自动改写简历，匹配现有经历，贴合岗位。</p>
           </div>
-        </div>
-        <div class="step reveal reveal-d2">
-          <div class="step-pin" style="--sc:var(--decor)">3</div>
-          <div class="step-body">
+          <div class="tl-item reveal reveal-d2">
+            <div class="tl-pin" style="--sc:var(--decor)">3</div>
+            <span class="tl-phase">Phase 3</span>
             <h3>版本管理打通</h3>
             <p>高亮修改部分，存档修改内容，简历关联投递记录。</p>
           </div>
-        </div>
-        <div class="step reveal reveal-d3">
-          <div class="step-pin" style="--sc:var(--primary)">4</div>
-          <div class="step-body">
+          <div class="tl-item reveal reveal-d3">
+            <div class="tl-pin" style="--sc:var(--primary)">4</div>
+            <span class="tl-phase">Phase 4</span>
             <h3>不同浏览器兼容修复</h3>
             <p>朋友截图反馈浏览器解析异常，逐版排查修复。</p>
           </div>
-        </div>
-        <div class="step reveal reveal-d3">
-          <div class="step-pin" style="--sc:var(--accent)">5</div>
-          <div class="step-body">
+          <div class="tl-item reveal reveal-d3">
+            <div class="tl-pin" style="--sc:var(--accent)">5</div>
+            <span class="tl-phase">Phase 5</span>
             <h3>邮件服务迁移</h3>
             <p>Supabase 免费版限制 5 封/小时，更换为 Resend。</p>
           </div>
         </div>
       </div>
+      <p class="timeline-hint">← 左右滑动查看全部 →</p>
     </div>
   </section>
 
-  <section class="scene-03">
+  <section class="scene-03" id="scene-03">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="eyebrow">03 其他功能</span>
         <h2>其他功能</h2>
       </div>
-      <div class="spec-grid">
-        <div class="spec-item reveal" style="--dc:var(--primary)">
-          <span class="spec-tag">version</span>
+      <div class="tag-grid">
+        <div class="tag-card reveal" style="--tc:var(--primary); --tc-bg:rgba(240,112,64,.1)">
+          <span class="tag-pill">version</span>
           <h3>版本管理</h3>
           <p>每次修改可溯源、可对比、可部分恢复</p>
         </div>
-        <div class="spec-item reveal reveal-d1" style="--dc:var(--accent)">
-          <span class="spec-tag">i18n</span>
+        <div class="tag-card reveal reveal-d1" style="--tc:var(--accent); --tc-bg:rgba(43,127,216,.1)">
+          <span class="tag-pill">i18n</span>
           <h3>中英切换</h3>
           <p>一键生成英文版</p>
         </div>
-        <div class="spec-item reveal reveal-d2" style="--dc:var(--decor)">
-          <span class="spec-tag">customize</span>
+        <div class="tag-card reveal reveal-d2" style="--tc:var(--decor); --tc-bg:rgba(204,41,54,.08)">
+          <span class="tag-pill">customize</span>
           <h3>灵活编辑</h3>
           <p>自定义模块、字体、字号、API</p>
         </div>
-        <div class="spec-item reveal" style="--dc:var(--primary)">
-          <span class="spec-tag">export</span>
+        <div class="tag-card reveal" style="--tc:var(--primary); --tc-bg:rgba(240,112,64,.1)">
+          <span class="tag-pill">export</span>
           <h3>PDF 导出</h3>
           <p>A4 尺寸所见即所得，清晰度优化</p>
         </div>
-        <div class="spec-item reveal reveal-d1" style="--dc:var(--accent)">
-          <span class="spec-tag">score</span>
+        <div class="tag-card reveal reveal-d1" style="--tc:var(--accent); --tc-bg:rgba(43,127,216,.1)">
+          <span class="tag-pill">score</span>
           <h3>简历评分</h3>
           <p>量化改进方向</p>
         </div>
