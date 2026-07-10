@@ -416,101 +416,64 @@ a { color: inherit; }
     linear-gradient(90deg, rgba(43, 127, 216, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-.signals-bg .content > .file-tag {
-  display: block;
-  width: fit-content;
-  margin: 0 auto 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  font-family: var(--font-title);
-  font-size: clamp(1.08rem, 2.6vw, 1.32rem);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0;
-  text-align: center;
-  color: var(--accent);
-  opacity: 0.9;
-}
-
-.ticket-grid {
+/* 三列纯文字排版：彩色短横线 + 英文标题 + 条目，无卡片 */
+.signal-pillars {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
+  gap: 52px;
+  padding-top: 16px;
 }
 @media (min-width: 601px) {
-  .ticket-grid,
+  .signal-pillars,
   .signal-sample-library {
     width: min(1080px, calc(100vw - 48px));
     margin-left: 50%;
     transform: translateX(-50%);
   }
 }
-.ticket-v {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(43, 127, 216, 0.12);
-  border-radius: 16px;
-  padding: 34px 28px;
-  background: var(--bg);
-  box-shadow: 0 1px 4px rgba(43, 127, 216, 0.045);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+.signal-pillar-dash {
+  display: block;
+  width: 48px;
+  height: 4px;
+  margin-bottom: 24px;
+  background: var(--dash, var(--accent));
+  border-radius: 2px;
 }
-.ticket-v:hover {
-  border-color: rgba(43, 127, 216, 0.42);
-  box-shadow: 0 8px 24px rgba(43, 127, 216, 0.12);
-  transform: translateY(-2px);
-}
-.ticket-v-head {
-  margin-bottom: 26px;
-}
-.ticket-v-name {
+.signal-pillar-title {
+  margin: 0 0 26px;
   font-family: var(--font-title);
-  font-size: 1.05rem;
+  font-size: 1.28rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--accent);
+  color: var(--ink);
 }
-.ticket-v-items {
+.signal-pillar-items {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 22px;
-  flex: 1;
 }
-.ticket-v-item-title {
+.signal-pillar-item-title {
   display: block;
   font-family: var(--font-title);
   font-size: 0.95rem;
   margin-bottom: 5px;
-  transition: color 0.2s ease;
 }
-.ticket-v:hover .ticket-v-item-title {
-  color: var(--accent);
-}
-.ticket-v-item-desc {
+.signal-pillar-item-desc {
   display: block;
   font-size: 0.8rem;
   line-height: 1.65;
   opacity: 0.5;
 }
 .signal-sample-library {
-  margin-top: 76px;
+  margin-top: 84px;
 }
 .signal-library-head {
   max-width: 620px;
-  margin: 0 auto 28px;
+  margin: 0 auto 44px;
   text-align: center;
-}
-.signal-library-kicker {
-  display: block;
-  margin-bottom: 10px;
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  color: rgba(43, 127, 216, 0.72);
 }
 .signal-library-head h1 {
   margin: 0;
@@ -520,19 +483,13 @@ a { color: inherit; }
   line-height: 1.4;
   color: var(--accent);
 }
-.signal-library-head p {
-  margin: 0;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  line-height: 1.7;
-  opacity: 0.62;
-}
-/* 画廊陈列：作品横排一行、中线等高悬挂，白色装裱衬板 + 轻投影，展签在下 */
+/* 画廊陈列：作品两两一排、中线等高悬挂，白色装裱衬板 + 轻投影，展签在下 */
 .signal-sample-grid {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 36px;
+  gap: 72px 48px;
 }
 .signal-sample-card {
   flex: 0 0 auto;
@@ -625,53 +582,6 @@ a { color: inherit; }
   line-height: 1.6;
   opacity: 0.52;
 }
-.ticket-v-tear {
-  position: relative;
-  height: 0;
-  border-top: 1.5px dashed rgba(43, 127, 216, 0.24);
-  margin: 26px 0 18px;
-}
-.ticket-v-tear::before,
-.ticket-v-tear::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  background: var(--bg);
-  border: 1px solid rgba(43, 127, 216, 0.18);
-  border-radius: 50%;
-}
-.ticket-v-tear::before { left: 0; transform: translate(-50%, -50%); }
-.ticket-v-tear::after { right: 0; transform: translate(50%, -50%); }
-.ticket-v-stub {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.ticket-v-stub .ticket-barcode { flex: 1; height: 22px; }
-.ticket-barcode {
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(43, 127, 216, 0.72) 0 1.5px,
-    transparent 1.5px 4px
-  );
-  opacity: 0.34;
-}
-.ticket-sticker {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border: 1.5px dashed rgba(43, 127, 216, 0.3);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  color: var(--accent);
-  opacity: 0.4;
-}
-
 /* ═══════════ 接触协议 ═══════════ */
 .contact-protocol-tag { margin-bottom: 28px; }
 .contact-intro-text {
@@ -856,17 +766,14 @@ a { color: inherit; }
     margin-top: 58px;
   }
   .signal-library-head {
-    margin-bottom: 22px;
-  }
-  .signal-library-head p {
-    font-size: 0.86rem;
+    margin-bottom: 30px;
   }
   .signal-sample-grid {
     flex-direction: column;
-    gap: 40px;
+    gap: 44px;
   }
   .signal-sample-card {
-    width: min(300px, 82vw);
+    width: min(330px, 86vw);
   }
   .signal-sample-media {
     aspect-ratio: 9 / 13.2;
@@ -879,8 +786,8 @@ a { color: inherit; }
     margin-top: 16px;
   }
 
-  .ticket-grid { grid-template-columns: 1fr; gap: 24px; }
-  .ticket-v { padding: 28px 22px; }
+  .signal-pillars { grid-template-columns: 1fr; gap: 36px; padding-top: 4px; }
+  .signal-pillar-title { margin-bottom: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
