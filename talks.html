@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>信号追踪 — Serena 熙冉</title>
-<link rel="stylesheet" href="style.css?v=signals-stack-20260710">
+<link rel="stylesheet" href="style.css?v=signals-stack2-20260710">
 </head>
 <body class="signals-bg">
 <div class="page">
@@ -79,6 +79,7 @@
     <section class="signal-sample-library" aria-labelledby="signal-sample-title">
       <div class="signal-library-head">
         <h1 id="signal-sample-title">信号样本库</h1>
+        <p class="signal-library-hint">点击图片查看更多</p>
       </div>
 
       <div class="signal-sample-grid">
@@ -136,6 +137,26 @@
         </footer>
       </article>
 
+      <article class="signal-sample-card" data-gallery style="--w:350; --h:645">
+        <div class="signal-stack">
+          <img class="signal-shot" src="assets/signals/app-design-01.jpg" alt="FamilyBox 家人信箱 App 设计稿" loading="lazy">
+        </div>
+        <footer class="signal-sample-meta">
+          <span class="signal-sample-mark">App 设计稿</span>
+        </footer>
+      </article>
+
+      <article class="signal-sample-card" data-gallery style="--w:400; --h:660">
+        <div class="signal-stack" role="button" tabindex="0" aria-label="点击查看下一张 YouTube Shorts 截图">
+          <img class="signal-shot" src="assets/signals/yt-shorts-01.jpg" alt="YouTube Shorts 数据截图 1" loading="lazy">
+          <img class="signal-shot" src="assets/signals/yt-shorts-02.jpg" alt="YouTube Shorts 数据截图 2" loading="lazy">
+          <img class="signal-shot" src="assets/signals/yt-shorts-03.jpg" alt="YouTube Shorts 数据截图 3" loading="lazy">
+        </div>
+        <footer class="signal-sample-meta">
+          <span class="signal-sample-mark">YouTube Shorts</span><span class="signal-sample-count">1 / 3</span>
+        </footer>
+      </article>
+
       </div>
     </section>
 
@@ -166,13 +187,17 @@ document.querySelectorAll('[data-gallery]').forEach((gallery) => {
   let active = 0;
   let busy = false;
 
+  if (shots.length < 2) {
+    stack.style.cursor = 'default';
+  }
+
   function layout() {
     shots.forEach((shot, index) => {
       const pos = (index - active + shots.length) % shots.length;
       shot.classList.remove('pos-0', 'pos-1', 'pos-2');
       if (pos <= 2) shot.classList.add(`pos-${pos}`);
     });
-    count.textContent = `${active + 1} / ${shots.length}`;
+    if (count) count.textContent = `${active + 1} / ${shots.length}`;
   }
 
   function flip() {

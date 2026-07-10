@@ -4,7 +4,7 @@
    Noto Serif SC + Inter
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Long+Cang&family=Noto+Serif+SC:wght@400;500;700&family=Schoolbell&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Serif+SC:wght@400;500;700&family=Schoolbell&display=swap');
 
 :root {
   --font-title: "Noto Serif SC", "PingFang SC", "Noto Sans SC", serif;
@@ -416,6 +416,10 @@ a { color: inherit; }
     linear-gradient(90deg, rgba(43, 127, 216, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
 }
+/* 顶部手写标题与三列文字之间多留一行呼吸感 */
+.signals-bg .about-journey-title {
+  margin-bottom: 64px;
+}
 /* 三列纯文字排版：彩色短横线 + 英文标题 + 条目，无卡片 */
 .signal-pillars {
   display: grid;
@@ -477,11 +481,17 @@ a { color: inherit; }
 }
 .signal-library-head h1 {
   margin: 0;
-  font-family: 'Long Cang', var(--font-title), cursive;
-  font-size: clamp(1.7rem, 4vw, 2.1rem);
-  font-weight: 400;
+  font-family: var(--font-title);
+  font-size: clamp(1.08rem, 2.6vw, 1.32rem);
+  font-weight: 500;
   line-height: 1.4;
   color: var(--accent);
+}
+.signal-library-hint {
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  opacity: 0.45;
 }
 /* 堆叠卡片陈列：图片即卡片（圆角 + 投影），后面露出两张叠影，点击翻下一张 */
 .signal-sample-grid {
