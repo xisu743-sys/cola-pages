@@ -20,50 +20,31 @@
       请选择适合你的频段。
     </div>
 
-    <button id="unlock-btn">申请接触</button>
-
-    <ul class="contact-channels" id="contact-channels">
-      <li class="contact-channel" id="ch-0">
-        <span class="ch-icon">📧</span>
-        <div class="ch-body">
-          <span class="ch-label">邮件频道</span>
-          <span class="ch-value">
-            <a href="mailto:xisu743@gmail.com">xisu743@gmail.com</a>
-            <span class="ch-note">最快响应</span>
-          </span>
-        </div>
+    <ul class="credits-roll">
+      <li class="cr-row">
+        <span class="cr-role">Email</span>
+        <a class="cr-value" href="mailto:xisu743@gmail.com">xisu743@gmail.com</a>
+        <span class="cr-note">最快响应</span>
       </li>
-      <li class="contact-channel" id="ch-1">
-        <span class="ch-icon">📕</span>
-        <div class="ch-body">
-          <span class="ch-label">小红书频道</span>
-          <span class="ch-value">@Serena_熙冉</span>
-        </div>
+      <li class="cr-row">
+        <span class="cr-role">Xiaohongshu</span>
+        <span class="cr-value">@Serena_熙冉</span>
       </li>
-      <li class="contact-channel" id="ch-2">
-        <span class="ch-icon">🔗</span>
-        <div class="ch-body">
-          <span class="ch-label">GitHub 频道</span>
-          <span class="ch-value">
-            <a href="https://github.com/xisu743-sys" target="_blank" rel="noopener">github.com/xisu743-sys</a>
-          </span>
-        </div>
+      <li class="cr-row">
+        <span class="cr-role">GitHub</span>
+        <a class="cr-value" href="https://github.com/xisu743-sys" target="_blank" rel="noopener">github.com/xisu743-sys</a>
+      </li>
+      <li class="cr-row">
+        <span class="cr-role">Structure Reference</span>
+        <a class="cr-value" href="https://hiesther.me" target="_blank" rel="noopener">hiesther.me</a>
+        <span class="cr-note">本档案室参考了此网站的结构</span>
+      </li>
+      <li class="cr-row">
+        <span class="cr-role">Build Assist</span>
+        <span class="cr-value">Cola</span>
+        <span class="cr-note">由 Cola 协助构建</span>
       </li>
     </ul>
-
-    <div class="credits">
-      <div class="credits-head">致谢</div>
-      <ul class="credits-list">
-        <li>
-          <a class="credit-name" href="https://hiesther.me" target="_blank" rel="noopener">hiesther.me</a>
-          <span class="credit-note">本档案室参考了此网站的结构</span>
-        </li>
-        <li>
-          <span class="credit-name">Cola</span>
-          <span class="credit-note">由 Cola 协助构建</span>
-        </li>
-      </ul>
-    </div>
 
   </main>
 
@@ -83,26 +64,5 @@
   <a href="talks.html">信号追踪</a>
   <a href="contact.html" class="active">接触协议</a>
 </nav>
-
-<script>
-(function () {
-  var btn = document.getElementById('unlock-btn');
-  var channels = document.querySelectorAll('.contact-channel');
-  var unlocked = false;
-
-  btn.addEventListener('click', function () {
-    if (unlocked) return;
-    unlocked = true;
-    btn.textContent = '已授权接触';
-    btn.disabled = true;
-
-    channels.forEach(function (ch, i) {
-      setTimeout(function () {
-        ch.classList.add('visible');
-      }, i * 300);
-    });
-  });
-})();
-</script>
 </body>
 </html>

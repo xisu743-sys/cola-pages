@@ -557,98 +557,47 @@ a { color: inherit; }
   font-size: 1rem;
   opacity: 0.6;
   line-height: 1.7;
-  margin-bottom: 32px;
+  margin-bottom: 56px;
 }
 
-#unlock-btn {
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  padding: 10px 28px;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  letter-spacing: 0.06em;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  margin-bottom: 40px;
-  display: block;
-}
-#unlock-btn:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--bg);
-}
-#unlock-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-  border-color: rgba(26, 26, 26, 0.3);
-}
-
-.contact-channels {
+/* 片尾名单风格：接触渠道与致谢合并为一条连续名单 */
+.credits-roll {
   list-style: none;
+  margin: 0 auto;
   padding: 0;
-  margin: 0 0 48px;
-}
-.contact-channel {
+  max-width: 420px;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.07);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
-.contact-channel:first-child { border-top: 1px solid rgba(26, 26, 26, 0.07); }
-.contact-channel.visible {
-  opacity: 1;
-  transform: translateY(0);
+.cr-row { padding: 34px 0; }
+.cr-row:first-child { padding-top: 0; }
+.cr-role {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 12px;
 }
-.ch-icon { font-size: 1.2rem; margin-top: 2px; flex-shrink: 0; }
-.ch-body { display: flex; flex-direction: column; gap: 3px; }
-.ch-label {
-  font-size: 0.75rem;
-  opacity: 0.4;
+.cr-value {
+  display: block;
   font-family: var(--font-title);
-  letter-spacing: 0.06em;
-}
-.ch-value { font-size: 1rem; }
-.ch-value a { text-decoration: none; }
-.ch-value a:hover { opacity: 0.7; }
-.ch-note {
-  font-size: 0.72rem;
-  opacity: 0.5;
-  border: 1px solid rgba(63, 81, 181, 0.4);
-  border-radius: 999px;
-  padding: 1px 8px;
-  color: var(--accent);
-  align-self: flex-start;
-  margin-left: 4px;
-}
-
-.credits { margin-top: 56px; }
-.credits-head {
-  font-family: var(--font-title);
-  font-size: 0.8rem;
-  opacity: 0.4;
-  letter-spacing: 0.1em;
-  margin: 0 0 16px;
-}
-.credits-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
-.credits-list li { display: flex; flex-direction: column; gap: 3px; }
-.credit-name {
-  font-size: 0.95rem;
+  font-size: 1.32rem;
+  color: var(--ink);
   text-decoration: none;
-  width: max-content;
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 100% 1px;
-  padding-bottom: 1px;
-  transition: background-size .25s ease;
 }
-.credit-name:hover { background-size: 100% 4px; }
-.credit-note { font-size: .85rem; opacity: .5; }
+a.cr-value { transition: color 0.2s ease; }
+a.cr-value:hover { color: var(--accent); }
+.cr-note {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  opacity: 0.5;
+}
 
 /* ── 弹窗（首页保留）── */
 .modal {
