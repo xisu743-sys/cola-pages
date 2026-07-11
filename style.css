@@ -552,9 +552,14 @@ a { color: inherit; }
   opacity: 0.55;
 }
 /* ═══════════ 接触协议 ═══════════ */
-.contact-protocol-tag { margin-bottom: 28px; }
+.contact-open { text-align: center; }
+.contact-protocol-tag {
+  margin-bottom: 28px;
+  color: #2B7FD8;
+  border-color: #2B7FD8;
+}
 .contact-intro-text {
-  font-size: 1rem;
+  font-size: 1.14rem;
   opacity: 0.6;
   line-height: 1.7;
   margin-bottom: 56px;
