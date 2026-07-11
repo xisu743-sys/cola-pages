@@ -1,0 +1,11 @@
+.DS_Store
+
+# Independent local workspaces that should not be committed to this site repo.
+ai-daily-digest/
+serena/
+
+# Daily digest files belong in the ai-daily-digest repository.
+.github/workflows/daily-digest.yml
+archive/2026-07-10.md
+docs/daily-digest-feishu.md
+scripts/send-daily-digest.js
