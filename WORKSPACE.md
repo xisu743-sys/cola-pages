@@ -9,7 +9,7 @@ Separate local workspaces that should be opened independently:
 
 - `/Users/sumomo/Documents/codex/ai-daily-digest`
   -> `https://github.com/xisu743-sys/ai-daily-digest.git`
-- `/Users/sumomo/Documents/codex/design-system-avatar-recolor`
+- `/Users/sumomo/Documents/codex/design-system`
   -> `https://github.com/xisu743-sys/design-system.git`
 - `/Users/sumomo/Documents/codex/esther-design-system-preview`
   -> `https://github.com/esthersjw/esther-design-system.git`
