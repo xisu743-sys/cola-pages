@@ -380,13 +380,13 @@ body.works-scene {
 }
 
 .case-window.detail-window {
-  width: min(760px, calc(100vw - 40px));
+  width: min(980px, calc(100vw - 40px));
   box-shadow: 0 18px 64px rgba(26,26,46,0.16);
 }
 .case-window.detail-window .win-body {
   padding: 0;
-  max-height: min(62vh, 520px);
-  height: min(62vh, 520px);
+  max-height: min(68vh, 620px);
+  height: min(68vh, 620px);
   overflow: hidden;
   background: #FFFEFA;
 }
@@ -592,6 +592,18 @@ body.works-scene {
   }
   .train-scene::-webkit-scrollbar { display: none; }
   .scene-notice { top: 14px; font-size: 0.76rem; padding: 8px 14px; }
+  .scene-notice {
+    width: min(462px, calc(100vw - 96px));
+    max-width: calc(100vw - 96px);
+    min-height: 86px;
+    display: grid;
+    place-items: center;
+    line-height: 1.85;
+    white-space: pre-line;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: initial;
+  }
   .scene-signal { top: 30%; height: 150px; }
   .scene-cloud {
     top: 7% !important;
@@ -771,12 +783,12 @@ body.works-scene {
 
   // 初始位置：错开排列
   const offsets = [
-    { x: 80,  y: 80  },
-    { x: 120, y: 100 },
-    { x: 160, y: 120 },
-    { x: 100, y: 90  },
-    { x: 140, y: 110 },
-    { x: 80,  y: 130 },
+    { x: 54,  y: 62  },
+    { x: 92,  y: 96  },
+    { x: 130, y: 130 },
+    { x: 168, y: 164 },
+    { x: 74,  y: 198 },
+    { x: 112, y: 232 },
   ];
   let openCount = 0;
 
@@ -789,20 +801,20 @@ body.works-scene {
       return;
     }
 
-    // 设置初始位置：详情窗口居中，普通资料窗错开排列。
-    if (win.classList.contains('detail-window')) {
-      const width = Math.min(760, window.innerWidth - 40);
-      const bodyHeight = Math.min(window.innerHeight * 0.62, 520);
-      const height = bodyHeight + 48;
-      win.style.left = Math.max(12, (window.innerWidth - width) / 2) + 'px';
-      win.style.top = Math.max(14, (window.innerHeight - height) / 2) + 'px';
-    } else {
-      const off = offsets[openCount % offsets.length];
-      const cx = Math.min(off.x + openCount * 20, window.innerWidth - 500);
-      const cy = Math.min(off.y + openCount * 20, window.innerHeight - 400);
-      win.style.left = Math.max(12, cx) + 'px';
-      win.style.top  = Math.max(12, cy) + 'px';
-    }
+    // 像浏览器标签页/桌面窗口一样逐个错开，同时保留足够宽度让嵌入页维持独立页的左右布局。
+    const off = offsets[openCount % offsets.length];
+    const step = Math.floor(openCount / offsets.length) * 18;
+    const winWidth = win.classList.contains('detail-window')
+      ? Math.min(980, window.innerWidth - 40)
+      : Math.min(480, window.innerWidth - 32);
+    const bodyHeight = win.classList.contains('detail-window')
+      ? Math.min(window.innerHeight * 0.68, 620)
+      : Math.min(window.innerHeight * 0.6, 520);
+    const winHeight = bodyHeight + 52;
+    const maxLeft = Math.max(12, window.innerWidth - winWidth - 12);
+    const maxTop = Math.max(12, window.innerHeight - winHeight - 86);
+    win.style.left = Math.min(maxLeft, off.x + step) + 'px';
+    win.style.top  = Math.min(maxTop, off.y + step) + 'px';
     openCount++;
 
     win.classList.add('open');
@@ -1068,7 +1080,9 @@ body.works-scene {
     const notice = document.getElementById('scene-notice');
     const noticeText = document.getElementById('scene-notice-text');
     if (!notice || !noticeText) return;
-    const msg = '捕获到 4 条异常信号，点击角色查看档案。';
+    const msg = window.matchMedia('(max-width: 600px)').matches
+      ? '捕获到 4 条异常信号，\n点击角色查看档案。'
+      : '捕获到 4 条异常信号，点击角色查看档案。';
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       noticeText.textContent = msg;
       notice.classList.add('show');
