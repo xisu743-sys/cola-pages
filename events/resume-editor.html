@@ -308,29 +308,16 @@
   }
   .tag-card p { color: var(--ink-light); font-size: .9rem; line-height: 1.82; }
 
-  .proof-shot {
-    margin-top: clamp(48px, 6vw, 72px);
-    width: min(420px, 100%);
-  }
-  .proof-shot .frame {
-    overflow: hidden;
-    border: 1px solid var(--line);
-    box-shadow: 0 10px 26px rgba(26, 26, 46, .05);
-  }
-  .proof-shot img { display: block; width: 100%; }
-  .proof-shot figcaption {
-    margin-top: 16px;
-    color: var(--ink-light);
-    font-size: .9rem;
-    line-height: 1.82;
-  }
-  .proof-shot figcaption strong { color: var(--ink); font-weight: 700; }
-
   /* ===== Closing ===== */
-  .closing { background: var(--primary); color: #fff; padding: clamp(70px, 10vw, 116px) 0; text-align: center; }
+  .closing { background: var(--primary); color: #fff; padding: clamp(70px, 10vw, 116px) 0; }
+  .closing-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(40px, 6vw, 88px);
+  }
   .closing-text {
     max-width: 13.5ch;
-    margin: 0 auto;
     font-family: 'Noto Serif SC', serif;
     font-size: clamp(2.1rem, 5.6vw, 4.1rem);
     font-weight: 900;
@@ -343,6 +330,14 @@
     letter-spacing: .03em;
     color: rgba(255, 255, 255, .82);
   }
+  .closing-shot {
+    flex: none;
+    width: min(280px, 32vw);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 24px 56px rgba(26, 26, 46, .22);
+  }
+  .closing-shot img { display: block; width: 100%; }
 
   .filefoot {
     display: flex;
@@ -379,11 +374,15 @@
   html.is-embed .tag-grid { grid-template-columns: 1fr 1fr; }
   html.is-embed .closing { padding: 48px 0; }
   html.is-embed .closing-text { font-size: clamp(1.8rem, 6vw, 2.6rem); }
+  html.is-embed .closing-inner { flex-direction: column; text-align: center; }
+  html.is-embed .closing-shot { width: min(200px, 46vw); }
 
   @media (max-width: 900px) {
     .icon-card-grid { grid-template-columns: 1fr; }
     .tag-grid { grid-template-columns: repeat(2, 1fr); }
     html.is-embed .tag-grid { grid-template-columns: 1fr; }
+    .closing-inner { flex-direction: column; text-align: center; }
+    .closing-shot { width: min(240px, 60vw); }
   }
 
   @media (max-width: 600px) {
@@ -396,7 +395,8 @@
     .hero-title { font-size: clamp(2.3rem, 11vw, 3.4rem); }
     .icon-card { flex-direction: column; }
     .tag-grid { grid-template-columns: 1fr; }
-    .closing-text { max-width: 10ch; }
+    .closing-text { max-width: 10ch; margin: 0 auto; }
+    .closing-shot { width: min(200px, 56vw); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -531,20 +531,18 @@
           <p>量化改进方向</p>
         </div>
       </div>
-
-      <figure class="proof-shot reveal reveal-d2">
-        <div class="frame">
-          <img src="assets/resume-editor-shot.png" alt="版本管理弹窗：勾选要恢复的模块——教育经历、实习经历、项目经历、技能与能力">
-        </div>
-        <figcaption><strong>版本管理</strong>的实际界面：AI 改写后，仍可按模块单独回退，不是全有或全无。</figcaption>
-      </figure>
     </div>
   </section>
 
   <section class="closing">
-    <div class="wrap">
-      <p class="closing-text reveal">第一个完整的<br>前后端项目</p>
-      <div class="closing-tech reveal reveal-d1">React · Tailwind · FastAPI · Supabase · Resend</div>
+    <div class="wrap closing-inner">
+      <div class="closing-copy reveal">
+        <p class="closing-text">第一个完整的<br>前后端项目</p>
+        <div class="closing-tech">React · Tailwind · FastAPI · Supabase · Resend</div>
+      </div>
+      <figure class="closing-shot reveal reveal-d1">
+        <img src="assets/resume-editor-shot.png" alt="版本管理弹窗：勾选要恢复的模块——教育经历、实习经历、项目经历、技能与能力">
+      </figure>
     </div>
   </section>
 
