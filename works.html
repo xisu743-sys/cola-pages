@@ -11,7 +11,7 @@ if (sessionStorage.getItem('serena-entering-works') === '1') {
   sessionStorage.removeItem('serena-entering-works');
 }
 </script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20260711-assetfix">
 <style>
 html.vt-entry body { animation: none; opacity: 1; }
 
@@ -655,22 +655,22 @@ body.works-scene {
     </svg>
   </div>
 
-  <img class="scene-cloud" src="assets/cloud-a.png" alt="" aria-hidden="true" draggable="false" style="top:8%;--cw:245px;--cx:58%;animation-duration:132s;animation-delay:-54s">
+  <img class="scene-cloud" src="assets/cloud-a.png" alt="" aria-hidden="true" draggable="false" loading="lazy" decoding="async" style="top:8%;--cw:245px;--cx:58%;animation-duration:132s;animation-delay:-54s">
 
   <button class="scene-ip" data-id="w6" style="left:18%;top:32%;--ip-accent:#3F51B5;--mobile-index:0">
-    <span class="scene-ip-figure"><img src="assets/ip-music.png" alt="戴耳机听音乐的 Serena 线稿" draggable="false"></span>
+    <span class="scene-ip-figure"><img src="assets/ip-music.png" alt="戴耳机听音乐的 Serena 线稿" draggable="false" decoding="async"></span>
     <span class="scene-ip-label">YouTube 爆款监测</span>
   </button>
   <button class="scene-ip" data-id="w4" style="left:17%;top:71%;--ip-accent:#FF7A59;--mobile-index:1">
-    <span class="scene-ip-figure"><img src="assets/ip-check.png" alt="举着对错牌的 Serena 线稿" draggable="false"></span>
+    <span class="scene-ip-figure"><img src="assets/ip-check.png" alt="举着对错牌的 Serena 线稿" draggable="false" decoding="async"></span>
     <span class="scene-ip-label">简历修改网站</span>
   </button>
   <button class="scene-ip" data-id="w7" style="left:70%;top:24%;--ip-accent:#C2185B;--mobile-index:2">
-    <span class="scene-ip-figure"><img src="assets/ip-telescope.png" alt="举着望远镜观测的 Serena 线稿" draggable="false"></span>
+    <span class="scene-ip-figure"><img src="assets/ip-telescope.png" alt="举着望远镜观测的 Serena 线稿" draggable="false" decoding="async"></span>
     <span class="scene-ip-label">LockLock</span>
   </button>
   <button class="scene-ip" data-id="w8" style="left:73%;top:72%;--ip-accent:#5C9E3D;--mobile-index:3">
-    <span class="scene-ip-figure"><img src="assets/ip-clean.png" alt="打扫房间的 Serena 线稿" draggable="false"></span>
+    <span class="scene-ip-figure"><img src="assets/ip-clean.png" alt="打扫房间的 Serena 线稿" draggable="false" decoding="async"></span>
     <span class="scene-ip-label">Home</span>
   </button>
 </div>
@@ -696,7 +696,7 @@ body.works-scene {
   </div>
   <div class="win-scan"></div>
   <div class="win-body">
-    <iframe class="case-frame" src="events/resume-editor.html?embed=1" title="个人简历修改网站详情"></iframe>
+    <iframe class="case-frame" data-src="events/resume-editor.html?embed=1" title="个人简历修改网站详情" loading="lazy"></iframe>
   </div>
 </div>
 
@@ -712,7 +712,7 @@ body.works-scene {
   </div>
   <div class="win-scan"></div>
   <div class="win-body">
-    <iframe class="case-frame" src="events/youtube-signal-hub.html?embed=1" title="YouTube 爆款监测系统详情"></iframe>
+    <iframe class="case-frame" data-src="events/youtube-signal-hub.html?embed=1" title="YouTube 爆款监测系统详情" loading="lazy"></iframe>
   </div>
 </div>
 
@@ -728,7 +728,7 @@ body.works-scene {
   </div>
   <div class="win-scan"></div>
   <div class="win-body">
-    <iframe class="case-frame" src="events/locklock.html?embed=1" title="LockLock 详情"></iframe>
+    <iframe class="case-frame" data-src="events/locklock.html?embed=1" title="LockLock 详情" loading="lazy"></iframe>
   </div>
 </div>
 
@@ -744,12 +744,12 @@ body.works-scene {
   </div>
   <div class="win-scan"></div>
   <div class="win-body">
-    <iframe class="case-frame" src="events/home.html?embed=1" title="Home 详情"></iframe>
+    <iframe class="case-frame" data-src="events/home.html?embed=1" title="Home 详情" loading="lazy"></iframe>
   </div>
 </div>
 
 <!-- ══ IP 形象 ══ -->
-<img id="ip-works" src="assets/serena-fullbody.png" alt="Serena" draggable="false">
+<img id="ip-works" src="assets/serena-fullbody-720.png" alt="Serena" width="487" height="720" decoding="async" draggable="false">
 
 <footer class="icp-footer icp-footer--fixed">
   <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">赣ICP备2026015468号-1</a>
@@ -771,6 +771,12 @@ body.works-scene {
     win.style.zIndex = ++topZ;
   }
 
+  function loadCaseFrame(win) {
+    const frame = win.querySelector('.case-frame[data-src]');
+    if (!frame || frame.src) return;
+    frame.src = frame.dataset.src;
+  }
+
   /* ── 打开窗口 ── */
   const openWindows = new Set();
 
@@ -790,6 +796,7 @@ body.works-scene {
     if (!win) return;
 
     if (openWindows.has(id)) {
+      loadCaseFrame(win);
       bringToFront(win);
       return;
     }
@@ -812,6 +819,7 @@ body.works-scene {
 
     win.classList.add('open');
     openWindows.add(id);
+    loadCaseFrame(win);
     bringToFront(win);
 
     // 重播扫描线

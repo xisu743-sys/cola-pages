@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>信号追踪 — Serena 熙冉</title>
-<link rel="stylesheet" href="style.css?v=signals-stack2-20260710">
+<link rel="stylesheet" href="style.css?v=20260711-assetfix">
 </head>
 <body class="signals-bg">
 <div class="page">
@@ -89,12 +89,12 @@
           <img class="signal-shot" src="assets/signals/xhs-01.jpg" alt="小红书内容观察截图 1" loading="lazy">
           <img class="signal-shot" src="assets/signals/xhs-02.jpg" alt="小红书内容观察截图 2" loading="lazy">
           <img class="signal-shot" src="assets/signals/xhs-03.jpg" alt="小红书内容观察截图 3" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-04.jpg" alt="小红书内容观察截图 4" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-05.jpg" alt="小红书内容观察截图 5" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-06.jpg" alt="小红书内容观察截图 6" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-07.jpg" alt="小红书内容观察截图 7" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-08.jpg" alt="小红书内容观察截图 8" loading="lazy">
-          <img class="signal-shot" src="assets/signals/xhs-09.jpg" alt="小红书内容观察截图 9" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-04.jpg" alt="小红书内容观察截图 4" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-05.jpg" alt="小红书内容观察截图 5" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-06.jpg" alt="小红书内容观察截图 6" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-07.jpg" alt="小红书内容观察截图 7" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-08.jpg" alt="小红书内容观察截图 8" loading="lazy">
+          <img class="signal-shot" data-src="assets/signals/xhs-09.jpg" alt="小红书内容观察截图 9" loading="lazy">
         </div>
         <footer class="signal-sample-meta">
           <span class="signal-sample-mark">小红书</span><span class="signal-sample-count">1 / 9</span>
@@ -191,11 +191,20 @@ document.querySelectorAll('[data-gallery]').forEach((gallery) => {
     stack.style.cursor = 'default';
   }
 
+  function ensureLoaded(shot) {
+    if (shot.dataset.src && !shot.src) {
+      shot.src = shot.dataset.src;
+    }
+  }
+
   function layout() {
     shots.forEach((shot, index) => {
       const pos = (index - active + shots.length) % shots.length;
       shot.classList.remove('pos-0', 'pos-1', 'pos-2');
-      if (pos <= 2) shot.classList.add(`pos-${pos}`);
+      if (pos <= 2) {
+        ensureLoaded(shot);
+        shot.classList.add(`pos-${pos}`);
+      }
     });
     if (count) count.textContent = `${active + 1} / ${shots.length}`;
   }
